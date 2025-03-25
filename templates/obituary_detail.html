@@ -38,7 +38,7 @@
         <h2 class="text-2xl font-semibold mb-4 text-center">{{ obituary.name }}</h2>
 
         <!-- Row of First Four Sections -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
 
             <!-- Name Section -->
             <section class="p-4 border rounded-lg shadow-sm">
@@ -68,10 +68,10 @@
             </section>
 
             <!-- Funeral Home Section -->
-            <section class="p-4 border rounded-lg shadow-sm">
-                <h3 class="font-semibold text-lg text-gray-700 mb-2"><i class="fas fa-building mr-2"></i> Funeral Home</h3>
-                <p class="text-gray-800">{{ obituary.funeral_home or 'N/A' }}</p>
-            </section>
+{#            <section class="p-4 border rounded-lg shadow-sm">#}
+{#                <h3 class="font-semibold text-lg text-gray-700 mb-2"><i class="fas fa-building mr-2"></i> Funeral Home</h3>#}
+{#                <p class="text-gray-800">{{ obituary.funeral_home or 'N/A' }}</p>#}
+{#            </section>#}
         </div>
 
         <!-- Family Information Section (Vertical) -->

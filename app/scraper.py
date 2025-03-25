@@ -293,7 +293,6 @@ def get_publication_date_and_soup(session, url):
         soup = BeautifulSoup(response.text, 'html.parser')
         soup_for_debug = soup
         publication_date = get_publication_date_from_soup(soup)
-        logging.info(f"Fetched publication date for {url}: {publication_date}")
         return publication_date, soup_for_debug
     except Exception as e:
         logging.error(f"Error fetching {url}: {e}")
@@ -313,36 +312,29 @@ def process_city(session, subdomain, stop_event, db_session): # Added db_session
         page_generator = process_search_pagination(
             session, subdomain, visited_search_pages, visited_obituaries, stop_event
         )
-        logging.info(f"[{subdomain.upper()}] Pagination generator created.")
 
         for page_urls in page_generator:
-            logging.info(f"[{subdomain.upper()}] Received page_urls from generator: {len(page_urls)} urls")
-            logging.info(f"[{subdomain.upper()}] Starting loop to process {len(page_urls)} obituary URLs.")
             if stop_event.is_set():
                 logging.info(f"[{subdomain.upper()}] Stop event detected during page URL processing.")
                 break
 
             for url in page_urls:
                 if stop_event.is_set():
-                    logging.info(f"[{subdomain.upper()}] Stop event detected during obituary URL loop.")
                     break
 
                 if url in visited_obituaries:
-                    logging.debug(f"[{subdomain.upper()}] Obituary URL already visited: {url}. Skipping.")
                     continue
 
                 # Process obituary with retries
                 success = False
                 for attempt in range(3):
                     try:
-                        logging.info(f"[{subdomain.upper()}] Attempt {attempt+1} to process obituary: {url}")
                         result = process_obituary(session, db_session, url, visited_obituaries, stop_event) # Pass db_session
                         if result and result["is_alumni"]:
                             total_alumni += 1
                         success = True
                         break
                     except requests.exceptions.RequestException as e:
-                        logging.warning(f"[{subdomain.upper()}] Attempt {attempt + 1} failed for {url}: {e}")
                         time.sleep(2 ** attempt)
 
                 if not success:
@@ -353,9 +345,7 @@ def process_city(session, subdomain, stop_event, db_session): # Added db_session
     except Exception as e:
         logging.error(f"[{subdomain.upper()}] Critical error processing city: {e}")
     finally:
-        logging.info(f"[{subdomain.upper()}] City processing finally block reached.")
         logging.info(f"[{subdomain.upper()}] Completed. Alumni found: {total_alumni}")
-    logging.info(f"[{subdomain.upper()}] process_city function ending.\n{'='*50}\n")
 
 
 def is_current_publication_date(publication_date_str):
