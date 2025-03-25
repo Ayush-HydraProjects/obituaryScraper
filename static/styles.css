@@ -140,3 +140,109 @@
     background-color: #f7f7f7; /* Light grey hover background */
 }
 /* Add more custom styles as needed */
+
+.tag-pill {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+
+.tag-new {
+    background-color: #3B82F6;
+    color: white;
+}
+
+.tag-updated {
+    background-color: #6B7280;
+    color: white;
+}
+
+#map {
+        height: 600px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+        border: 2px solid #fff;
+    }
+
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px!important;
+        box-shadow: 0 0 0 0 !important;
+    }
+
+    .custom-marker {
+        background: #ffffff;
+        border: 2px solid;
+        border-radius: 50%;
+        width: 40px!important;
+        height: 40px!important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+
+    .custom-marker.new {
+        border-color: #10b981;
+        color: #10b981;
+    }
+
+    .custom-marker.updated {
+        border-color: #6b7280;
+        color: #6b7280;
+    }
+
+    .map-legend {
+        padding: 10px;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    }
+
+    .custom-cluster-marker div {
+    background-color: rgba(52, 152, 219, 0.8); /* Blue background */
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    border: 2px solid white;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    font-size: 14px; /* Adjust font size as needed */
+}
+
+.custom-cluster-marker-legend {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgba(52, 152, 219, 0.8);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    font-weight: bold;
+    border: 1px solid white;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.custom-cluster-marker-legend span {
+    margin: auto; /* Center text */
+}
+
+
+/* Add this CSS to make the popup scrollable */
+.leaflet-popup-content-wrapper {
+    max-height: 300px; /* Adjust as needed */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrollbar */
+}

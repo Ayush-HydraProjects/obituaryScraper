@@ -119,6 +119,29 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         applyFilters();
     });
+
+    const tagForm = document.getElementById('tagUpdateForm');
+    if (tagForm){
+        tagForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const obituaryId = this.dataset.obituaryId;
+
+            fetch(`/update_tags/${obituaryId}`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Error updating tag');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    }
 });
 
 
@@ -266,10 +289,9 @@ function createYearAccordionSection(year, obituaries, isFirstSection) { // NEW f
     const tableHeader = document.createElement('thead');
     tableHeader.innerHTML = `
         <tr>
-            <th class="border px-4 py-2">First Name</th>
-            <th class="border px-4 py-2">Last Name</th>
-            <th class="border px-4 py-2">City</th>  <!-- Keep City and Province if you want to display them -->
-            <th class="border px-4 py-2">Province</th> <!-- Keep City and Province if you want to display them -->
+            <th class="border px-4 py-2">Name</th>
+            <th class="border px-4 py-2">City</th>
+            <th class="border px-4 py-2">Province</th>
             <th class="border px-4 py-2">Birth Date</th>
             <th class="border px-4 py-2">Death Date</th>
             <th class="border px-4 py-2">View</th>
@@ -291,12 +313,31 @@ function createYearAccordionSection(year, obituaries, isFirstSection) { // NEW f
     const tableBody = document.createElement('tbody');
     obituaries.forEach(obituary => {
         const row = document.createElement('tr');
-        row.classList.add("hover:bg-gray-100", "transition"); // Optional row styling
-        row.innerHTML = `
-            <td class="border px-4 py-2">${obituary.first_name || 'N/A'}</td>
-            <td class="border px-4 py-2">${obituary.last_name || 'N/A'}</td>
-            <td class="border px-4 py-2">${obituary.city || 'N/A'}</td> <!-- Keep City and Province if you want to display them -->
-            <td class="border px-4 py-2">${obituary.province || 'N/A'}</td> <!-- Keep City and Province if you want to display them -->
+        row.classList.add("hover:bg-gray-100", "transition");
+
+        // Construct Name cell content to include pill BEFORE the name
+        let nameCellContent = `<td class="border px-4 py-2">`; // Start of td
+
+        if (obituary.tags === 'new') {
+            nameCellContent += `
+                    <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-white bg-blue-500 rounded-full">
+                        New
+                    </span>`; // New Pill
+        } else if (obituary.tags === 'updated') {
+            nameCellContent += `
+                    <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-white bg-gray-500 rounded-full">
+                        Updated
+                    </span>`; // Updated Pill (Gray color)
+        }
+        nameCellContent += `
+                <a href="/obituary/${obituary.id}" class="font-medium text-gray-700 hover:text-blue-600 inline-flex items-center">
+                    ${obituary.first_name || 'N/A'} ${obituary.last_name || 'N/A'}
+                </a></td>`; // Name Link
+
+        row.innerHTML =`
+            ${nameCellContent}
+            <td class="border px-4 py-2">${obituary.city || 'N/A'}</td>
+            <td class="border px-4 py-2">${obituary.province || 'N/A'}</td>
             <td class="border px-4 py-2">${obituary.birth_date || 'N/A'}</td>
             <td class="border px-4 py-2">${obituary.death_date || 'N/A'}</td>
             <td class="border px-4 py-2">
@@ -306,14 +347,12 @@ function createYearAccordionSection(year, obituaries, isFirstSection) { // NEW f
         tableBody.appendChild(row);
     });
     obituaryTable.appendChild(tableBody);
-    yearContent.appendChild(obituaryTable); // Append the table to the content div
+    yearContent.appendChild(obituaryTable);
     yearSection.appendChild(yearContent);
 
-    if (isFirstSection) { // If it's the first section, set max-height to open it
-        yearHeading.classList.add('active'); // Add active class to the first header
-        // yearContent.style.maxHeight = yearContent.scrollHeight + "px"; // Expand the first content
+    if (isFirstSection) {
+        yearHeading.classList.add('active');
     }
-
 
     return yearSection;
 }
@@ -321,9 +360,8 @@ function createYearAccordionSection(year, obituaries, isFirstSection) { // NEW f
 function updateLastScrapeTimeDisplay(timeString) { // NEW function to update last scrape time
     const lastScrapeTimeSpan = document.getElementById("lastScrapeTimeDisplay");
     if (timeString) {
-        const formattedTime = new Date(timeString).toLocaleString(); // Format the ISO string to local date and time
-        lastScrapeTimeSpan.textContent = formattedTime;
+        lastScrapeTimeSpan.textContent = new Date(timeString).toLocaleString();
     } else {
-        lastScrapeTimeSpan.textContent = "Never"; // Or "N/A", or leave it blank, as you prefer for no time yet
+        lastScrapeTimeSpan.textContent = "Never";
     }
 }
