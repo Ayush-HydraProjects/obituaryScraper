@@ -19,7 +19,7 @@
 <!-- Header -->
 <header class="bg-white shadow-md py-4">
     <div class="container mx-auto px-6 flex justify-between items-center">
-        <div class="text-xl font-bold text-gray-800">📖 Obituary Scraper Dashboard</div>
+        <div class="text-xl font-bold text-gray-800">📖 Remembering Lancers</div>
         <nav class="space-x-4">
             <a href="/" class="hover:text-gray-600">🏠 Dashboard</a>
             <!--            <a href="/settings" class="hover:text-gray-600">⚙️ Settings</a>-->
@@ -30,7 +30,7 @@
 
 <div class="container mx-auto p-6">
     <header class="bg-white shadow-md p-4 mb-6 rounded-lg text-xl font-semibold text-gray-800">
-        Obituary Details
+        Lancer Details
     </header>
 
     <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
@@ -105,30 +105,32 @@
         <div class="mb-4">
             <section class="p-4 border rounded-lg shadow-sm">
                 <form id="tagUpdateForm" action="{{ url_for('routes.update_tags', obituary_id=obituary.id) }}" method="POST">
-                    <h3 class="font-semibold text-lg text-gray-700 mb-2">
+                   <h3 class="font-semibold text-lg text-gray-700 mb-2"> <!-- Increased font-size and margin-bottom for title -->
                         <i class="fas fa-tags mr-2"></i> Status
                     </h3>
-                    <div class="flex items-center gap-6">
-                        <div class="flex items-center space-x-2">
-                            <input type="radio" id="tag_new" name="tags" value="new"
-                                   {% if obituary.tags == "new" %}checked{% endif %}
-                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500">
-                            <label for="tag_new" class="text-gray-800 flex items-center">
-                                <span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
-                                New
-                            </label>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <input type="radio" id="tag_updated" name="tags" value="updated"
-                                   {% if obituary.tags == "updated" %}checked{% endif %}
-                                   class="h-4 w-4 text-gray-600 focus:ring-gray-500">
-                            <label for="tag_updated" class="text-gray-800 flex items-center">
-                                <span class="inline-block w-2 h-2 rounded-full bg-gray-500 mr-2"></span>
-                                Updated
-                            </label>
+                    <div class="flex flex-col md:flex-row items-start md:items-center gap-8"> <!-- Vertical on small screens, horizontal on medium+, increased gap -->
+                        <div class="flex items-center space-x-4"> <!-- Increased space between radio options -->
+                            <div class="flex items-center space-x-2">
+                                <input type="radio" id="tag_new" name="tags" value="new"
+                                       {% if obituary.tags == "new" %}checked{% endif %}
+                                       class="h-5 w-5 text-blue-600 focus:ring-blue-500"> <!-- Slightly larger radio buttons -->
+                                <label for="tag_new" class="text-lg text-gray-800 flex items-center"> <!-- Larger label text -->
+                                    <span class="inline-block w-3 h-3 rounded-full bg-blue-500 mr-2"></span> <!-- Slightly larger indicator dot -->
+                                    New
+                                </label>
+                            </div>
+                            <div class="flex items-center space-x-2"> <!-- Increased space between radio options -->
+                                <input type="radio" id="tag_updated" name="tags" value="updated"
+                                       {% if obituary.tags == "updated" %}checked{% endif %}
+                                       class="h-5 w-5 text-gray-600 focus:ring-gray-500"> <!-- Slightly larger radio buttons -->
+                                <label for="tag_updated" class="text-lg text-gray-800 flex items-center"> <!-- Larger label text -->
+                                    <span class="inline-block w-3 h-3 rounded-full bg-gray-500 mr-2"></span> <!-- Slightly larger indicator dot -->
+                                    Updated
+                                </label>
+                            </div>
                         </div>
                         <button type="submit"
-                                class="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                                class="px-3 py-1 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors text-lg"> <!-- More prominent button styling -->
                             Update Status
                         </button>
                     </div>
@@ -138,7 +140,7 @@
     </div>
 
         <div class="mt-6 text-center">
-            <a href="/" class="primary-button">
+            <a href="/" class="px-5 py-3 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors text-lg">
                 Back to Dashboard
             </a>
         </div>

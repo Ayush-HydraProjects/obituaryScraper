@@ -51,7 +51,7 @@
     <!-- Sidebar - Advanced Filters -->
     <aside class="w-72 mr-6 p-6 bg-white rounded-lg shadow-md h-fit sticky top-6">
         <h3 class="font-semibold text-xl mb-5 text-gray-800"><i class="fas fa-filter mr-2 text-blue-500"></i> Filter
-            Obituaries</h3>
+            Lancers</h3>
         <form id="filterForm" class="space-y-6">
             <!-- Increased vertical spacing -->
             <div>
@@ -189,7 +189,7 @@
 </div>
 <div class="container mx-auto p-6">
     <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold mb-4">🌍 Obituary Locations</h2>
+        <h2 class="text-2xl font-semibold mb-4">🌍 Lancers Locations</h2>
         <div id="map" style="height: 600px; width: 100%;"></div>
     </div>
 </div>
@@ -240,7 +240,7 @@
                         let popupContent = `
                     <div class="leaflet-popup-content-wrapper">
                         <div class="p-2 max-w-xs">
-                            <h3 class="font-bold text-lg text-center text-gray-900 mb-2">Obituaries (${count})</h3>
+                            <h3 class="font-bold text-lg text-center text-gray-900 mb-2">Lancers (${count})</h3>
                             <ul class="obituary-list">
                             ${group.map(obit => `
                                 <li class="mb-4 border-b pb-2 last:border-b-0 last:mb-0">
@@ -274,7 +274,7 @@
         <h4 class="font-bold text-md text-center mb-2">🗺️ Map Legend</h4>
         <div class="flex items-center">
             <div class="custom-cluster-marker-legend mr-2"><span>99+</span></div>
-            <span class="text-xs">Obituary Locations (Count)</span>
+            <span class="text-xs">Lancers Locations (Count)</span>
         </div>
     `;
             return div;
