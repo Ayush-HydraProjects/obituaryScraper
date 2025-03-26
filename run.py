@@ -14,4 +14,4 @@ if __name__ == "__main__":
         # Optionally, you might want to set stop_event here if it's meant to start stopped initially
         pass
 
-    app.run(debug=True) # Run the Flask development server
+    app.run(host='0.0.0.0', debug=True) # Run the Flask development server
