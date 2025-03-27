@@ -16,7 +16,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    platform: linux/amd64  # For Apple Silicon compatibility
 
   db:
     image: postgres:13
@@ -33,7 +32,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    platform: linux/amd64  # For Apple Silicon compatibility
 
 volumes:
   postgres_data:

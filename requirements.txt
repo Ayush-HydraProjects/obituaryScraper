@@ -4,7 +4,7 @@ Flask-Migrate==4.0.7
 psycopg2-binary==2.9.10  # Or psycopg2, if you don't need binary version
 requests==2.32.0
 beautifulsoup4==4.12.3
-spacy==3.8.4
+spacy==3.7.2
 python-dateutil==2.9.0.post0
 geopy==2.4.1
 APScheduler==3.11.0
@@ -18,3 +18,4 @@ urllib3==2.2.2 # if not automatically included by requests
 itsdangerous==2.1.2
 python-dotenv==1.0.0
 pytz==2025.2
+numpy==1.26.4
