@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8b1d3ac4-26a5-4a40-b852-211847559101" name="Changes" comment="change">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/information_schema.FNRwLQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/information_schema.FNRwLQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/pg_catalog.0S1ZNQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
