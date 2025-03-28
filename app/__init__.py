@@ -1,8 +1,8 @@
 # app/__init__.py
 import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 from apscheduler.schedulers.background import BackgroundScheduler
 import pytz
 import logging
@@ -65,5 +65,3 @@ def create_app():
     atexit.register(shutdown_scheduler_on_exit)
 
     return app
-
-from app import models, routes, scraper, utils, task_scheduler

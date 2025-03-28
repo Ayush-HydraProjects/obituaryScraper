@@ -561,19 +561,19 @@ def process_obituary(session, db_session, url, visited_obituaries, stop_event): 
 
         if is_alumni:
             # --- app.app_context() block removed, using db_session directly ---
-            obituary_entry = Obituary(**{
-                'name': f"{first_name} {last_name}", 'first_name': first_name, 'last_name': last_name,
-                'birth_date': birth_date, 'death_date': death_date,
-                'donation_information': donation_info, 'obituary_url': url, 'city': city,
-                'province': province, 'is_alumni': is_alumni, 'family_information': content_text,
-                'funeral_home': funeral_home,
-                'tags': tags,  # Update this line
-                'publication_date': pub_date if publication_date_str else None,
-                'latitude': latitude,
-                'longitude' : longitude,
-            })
-            db_session.add(obituary_entry)
-            db_session.flush() # Keep flush for immediate DB operations within this session
+            # obituary_entry = Obituary(**{
+            #     'name': f"{first_name} {last_name}", 'first_name': first_name, 'last_name': last_name,
+            #     'birth_date': birth_date, 'death_date': death_date,
+            #     'donation_information': donation_info, 'obituary_url': url, 'city': city,
+            #     'province': province, 'is_alumni': is_alumni, 'family_information': content_text,
+            #     'funeral_home': funeral_home,
+            #     'tags': tags,  # Update this line
+            #     'publication_date': pub_date if publication_date_str else None,
+            #     'latitude': latitude,
+            #     'longitude' : longitude,
+            # })
+            # db_session.add(obituary_entry)
+            # db_session.flush() # Keep flush for immediate DB operations within this session
 
             distinct_entry_exists = DistinctObituary.query.filter_by(name=f"{first_name} {last_name}").first()
             if not distinct_entry_exists:

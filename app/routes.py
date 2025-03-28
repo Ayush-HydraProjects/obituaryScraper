@@ -190,10 +190,11 @@ def get_publications_grouped_by_year():
 @bp.route('/update_tags/<int:obituary_id>', methods=['POST'])
 def update_tags(obituary_id):
     new_tags = request.form.get('tags')
+    temp_obituary_id = None # Temporary variable to store obituary_id
 
     # Update Obituary
     with current_app.app_context():
-        obituary = Obituary.query.get_or_404(obituary_id)
+        obituary = DistinctObituary.query.get_or_404(obituary_id)
         obituary.tags = new_tags
 
         # Update DistinctObituary if exists
@@ -204,7 +205,9 @@ def update_tags(obituary_id):
             distinct_obit.tags = new_tags
 
         db.session.commit()
-    return redirect(url_for('routes.obituary_detail', obituary_id=obituary_id)) # Use blueprint endpoint name
+        temp_obituary_id = obituary.id # Fetch and store obituary.id WHILE INSIDE app context
+
+    return redirect(url_for('routes.obituary_detail', obituary_id=temp_obituary_id))
 
 
 @bp.route('/start_scrape', methods=['POST'])
