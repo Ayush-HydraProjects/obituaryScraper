@@ -6,9 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="8b1d3ac4-26a5-4a40-b852-211847559101" name="Changes" comment="change">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/information_schema.FNRwLQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/information_schema.FNRwLQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/pg_catalog.0S1ZNQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/pg_catalog.0S1ZNQ.zip" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/pg_catalog.0S1ZNQ.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a6184b9a-9718-453c-9687-2a3aca62b4bc/storage_v2/_src_/database/rememberingDB.c1l4kg/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/obituaryScraper.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/obituaryScraper.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -133,6 +136,7 @@
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -166,6 +170,8 @@
       <workItem from="1742216901234" duration="5862000" />
       <workItem from="1742316769621" duration="1492000" />
       <workItem from="1742563508900" duration="14983000" />
+      <workItem from="1743172168106" duration="201000" />
+      <workItem from="1743172385188" duration="1616000" />
     </task>
     <task id="LOCAL-00001" summary="lancer update">
       <option name="closed" value="true" />
@@ -211,9 +217,19 @@
     <MESSAGE value="change" />
     <option name="LAST_COMMIT_MESSAGE" value="change" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file:///Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/apscheduler/__init__.py</url>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/obituaryScraper$run.coverage" NAME="run Coverage Results" MODIFIED="1742222110334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/obituaryScraper$Flask__run_py_.coverage" NAME="Flask (run.py) Coverage Results" MODIFIED="1742996337288" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/obituaryScraper$Flask__run_py_.coverage" NAME="Flask (run.py) Coverage Results" MODIFIED="1743173218712" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/obituaryScraper$obituaryScraper.coverage" NAME="obituaryScraper Coverage Results" MODIFIED="1742316872393" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>
