@@ -1,24 +1,29 @@
-# Use official Python 3.12 image
-FROM python:3.12.4-slim
+FROM python:3.11-slim
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Set work directory
 WORKDIR /app
 
-# Install dependencies
+RUN apt-get update -y && \
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    python3-dev \
+    postgresql-client \  # Add PostgreSQL client
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install spaCy model
 RUN python -m spacy download en_core_web_sm
-RUN pip install sqlalchemy apscheduler
 
-
-# Copy application
 COPY . .
 
-# Expose port
+# Add entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 5000
+
+ENTRYPOINT ["/entrypoint.sh"]
