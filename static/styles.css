@@ -150,13 +150,13 @@
 }
 
 .tag-new {
-    background-color: #3B82F6;
+    background-color: #005596;
     color: white;
 }
 
 .tag-updated {
-    background-color: #6B7280;
-    color: white;
+    background-color: #FFCE00;
+    color: black;
 }
 
 #map {
@@ -245,3 +245,44 @@
     overflow-y: auto; /* Enable vertical scrolling */
     overflow-x: hidden; /* Prevent horizontal scrollbar */
 }
+
+.bg-blue-100 { background-color: #dbeafe; }
+.text-blue-700 { color: #005596; }
+.bg-green-100 { background-color: #dcfce7; }
+.text-green-700 { color: #15803d; }
+.bg-red-100 { background-color: #fee2e2; }
+.text-red-700 { color: #b91c1c; }
+
+      /* Custom Color Overrides */
+      .primary-bg { background-color: #005596; }
+      .primary-border { border-color: #005596; }
+      .primary-text { color: #005596; }
+      .secondary-bg { background-color: #FFCE00; }
+      .secondary-border { border-color: #FFCE00; }
+      .secondary-text { color: #FFCE00; }
+
+      .primary-button {
+        background-color: #005596;
+        color: white;
+        border: 1px solid #004379;
+      }
+      .primary-button:hover {
+        background-color: #004379;
+        color: white;
+      }
+      .secondary-button {
+        background-color: #FFCE00;
+        color: #333;
+        border: 1px solid #e6b800;
+      }
+      .secondary-button:hover {
+        background-color: #e6b800;
+        color: #333;
+      }
+      .custom-cluster-marker {
+        background-color: #005596;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        font-weight: bold;
+      }

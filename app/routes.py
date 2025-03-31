@@ -18,8 +18,91 @@ import csv
 from datetime import datetime
 import tempfile
 
-bp = Blueprint('routes', __name__) # Create a Blueprint instance
+from app import mail # Import mail instance from _init_
+from flask_mail import Message
 
+
+def get_filtered_obituaries(filters):
+    """Filters DistinctObituary based on a dictionary of filters."""
+    with current_app.app_context():
+        query = DistinctObituary.query
+
+        # Handle text filters
+        if filters.get('firstName'):
+            query = query.filter(DistinctObituary.first_name.ilike(f"%{filters['firstName']}%"))
+        if filters.get('lastName'):
+            query = query.filter(DistinctObituary.last_name.ilike(f"%{filters['lastName']}%"))
+        if filters.get('city'):
+            query = query.filter(DistinctObituary.city.ilike(f"%{filters['city']}%"))
+        if filters.get('province') and filters.get('province') != '':
+            query = query.filter(DistinctObituary.province == filters['province'])
+
+        # Handle month/year filter
+        if filters.get('month_year'):
+            try:
+                year, month = map(int, filters['month_year'].split('-'))
+                query = query.filter(
+                    extract('year', DistinctObituary.publication_date) == year,
+                    extract('month', DistinctObituary.publication_date) == month
+                )
+            except (ValueError, AttributeError) as e:
+                logging.warning(f"Invalid month_year format: {filters['month_year']} - {str(e)}")
+
+        obituaries = query.order_by(DistinctObituary.publication_date.desc()).all()
+        logging.info(f"Filtering found {len(obituaries)} obituaries. Filters: {filters}")
+        return obituaries
+
+def generate_csv_in_memory(obituaries):
+    """Generates CSV data in memory from obituary list."""
+    if not obituaries: return None
+    output = io.StringIO()
+    fieldnames = ['id', 'name', 'first_name', 'last_name', 'city', 'province','birth_date', 'death_date', 'publication_date', 'obituary_url','tags', 'funeral_home', 'latitude', 'longitude']
+    writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction='ignore')
+    writer.writeheader()
+    for obit in obituaries:
+        writer.writerow({
+            'id': obit.id, 'name': obit.name, 'first_name': obit.first_name,'last_name': obit.last_name, 'city': obit.city, 'province': obit.province,
+            'birth_date': obit.birth_date, 'death_date': obit.death_date,'publication_date': obit.publication_date.strftime('%Y-%m-%d') if obit.publication_date else '',
+            'obituary_url': obit.obituary_url, 'tags': obit.tags,'funeral_home': obit.funeral_home, 'latitude': obit.latitude,'longitude': obit.longitude,})
+    csv_data = output.getvalue()
+    output.close()
+    return csv_data
+
+
+def send_report_email(subject, recipients, html_body, attachments=None):
+    """Sends email using Flask-Mail."""
+    if not recipients:
+        logging.warning("No recipients for email.")
+        return False
+
+    try:
+        # Get sender from config
+        sender = current_app.config.get('MAIL_DEFAULT_SENDER')
+        if not sender:
+            logging.error("Mail sender not configured")
+            return False
+
+        # Create message with proper sender
+        msg = Message(
+            subject,
+            sender=sender,
+            recipients=recipients,
+            html=html_body
+        )
+
+        # Attach CSV file
+        if attachments:
+            for filename, content_type, data in attachments:
+                msg.attach(filename, content_type, data)
+
+        mail.send(msg)
+        logging.info(f"Email sent successfully to {', '.join(recipients)}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send email: {e}", exc_info=True)
+        return False
+
+bp = Blueprint('routes', __name__) # Create a Blueprint instance
 
 @bp.route('/')
 def dashboard():
@@ -37,7 +120,8 @@ def dashboard():
             'total_cities': total_cities,
             'obituaries': latest_obituaries,
             'scraping_active': scraping_active,
-            'last_scrape_time': last_scrape_time
+            'last_scrape_time': last_scrape_time,
+            'datetime': datetime
         }
         return render_template('dashboard.html', **response_data)
 
@@ -450,6 +534,38 @@ def download_filtered_csv():
             headers={"Content-Disposition": f"attachment;filename={filename}"}
         )
 
+@bp.route('/mail_filtered_report', methods=['POST'])
+def mail_filtered_report():
+    """Receives filters and recipients, generates CSV, and emails it."""
+    if not request.is_json: return jsonify({"error": "Request must be JSON"}), 400
+    data = request.get_json()
+    recipients = data.get('recipients')
+    filters = data.get('filters', {})
+    if not recipients or not isinstance(recipients, list): return jsonify({"error": "Invalid recipients"}), 400
+    if not isinstance(filters, dict): return jsonify({"error": "Invalid filters"}), 400
+    cleaned_recipients = [str(e).strip() for e in recipients if str(e).strip()]
+    if not cleaned_recipients: return jsonify({"error": "No valid recipients"}), 400
+
+    logging.info(f"Manual mail report request for: {', '.join(cleaned_recipients)}. Filters: {filters}")
+    filtered_obituaries = get_filtered_obituaries(filters) # Use helper
+    if not filtered_obituaries: return jsonify({"error": "No data found matching filters."}), 404
+
+    csv_data = generate_csv_in_memory(filtered_obituaries) # Use helper
+    if not csv_data: return jsonify({"error": "Failed to generate report data."}), 500
+
+    # Prepare Email
+    subject = f"Lancer Obituary Report ({datetime.now().strftime('%Y-%m-%d')})"
+    if filters.get('month_year'):
+        subject = f"Lancer Monthly Report - {filters['month_year']}"
+    filter_desc = ', '.join([f"{k.replace('Name',' Name')}={v}" for k, v in filters.items() if v]) or "None" # Basic formatting
+    html_body = f"<p>Attached is the filtered report.</p><p><strong>Filters Applied:</strong> {filter_desc}</p><p><strong>Records Found:</strong> {len(filtered_obituaries)}</p>"
+    csv_filename = f"lancer_filtered_report_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
+    attachments = [(csv_filename, 'text/csv', csv_data)]
+
+    # Send email using helper
+    success = send_report_email(subject, cleaned_recipients, html_body, attachments)
+    if success: return jsonify({"message": "Report sent successfully!"})
+    else: return jsonify({"error": "Failed to send email. Check server logs."}), 500
 
 @bp.route('/about')
 def about():

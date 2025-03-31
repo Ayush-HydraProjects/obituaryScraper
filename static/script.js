@@ -320,12 +320,12 @@ function createYearAccordionSection(year, obituaries, isFirstSection) { // NEW f
 
         if (obituary.tags === 'new') {
             nameCellContent += `
-                    <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-white bg-blue-500 rounded-full">
+                    <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none rounded-full primary-bg text-white">
                         New
                     </span>`; // New Pill
         } else if (obituary.tags === 'updated') {
             nameCellContent += `
-                    <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-white bg-gray-500 rounded-full">
+                    <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none rounded-full secondary-bg text-black">
                         Updated
                     </span>`; // Updated Pill (Gray color)
         }

@@ -1,392 +1,932 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Remembering Lancers</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
     <!-- Leaflet Marker Cluster CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+    />
 
     <script>
-        let scrapingActive = {{ scraping_active|tojson }};
-        console.log("Initial scrapingActive:", scrapingActive);
+      let scrapingActive = {{ scraping_active|tojson }};
+      console.log("Initial scrapingActive:", scrapingActive);
     </script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Leaflet Marker Cluster JavaScript -->
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
-
     <!-- ADD A NEW SCRIPT TAG HERE for the modal functions - MOVE TO HEAD for function definition before usage -->
     <script>
-    // Functions for Download Modal
-    function openDownloadModal() {
+      // Functions for Download Modal
+      function openDownloadModal() {
         console.log("Opening download modal");
-        document.getElementById('downloadModal').classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
-        document.getElementById('map').style.zIndex = '-1';
-    }
-    function closeDownloadModal() {
+        document.getElementById("downloadModal").classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+        document.getElementById("map").style.zIndex = "-1";
+      }
+      function closeDownloadModal() {
         console.log("Closing download modal");
-        document.getElementById('downloadModal').classList.add('hidden');
-        document.body.classList.remove('overflow-hidden'); // Restore body scroll
-        document.getElementById('map').style.zIndex = '';
-    }
-    function triggerFilteredDownload() {
-        let status = document.getElementById('csvStatusFilter').value;
-        const monthYearInput = document.getElementById('csvMonthYearFilter');
+        document.getElementById("downloadModal").classList.add("hidden");
+        document.body.classList.remove("overflow-hidden"); // Restore body scroll
+        document.getElementById("map").style.zIndex = "";
+      }
+      function triggerFilteredDownload() {
+        let status = document.getElementById("csvStatusFilter").value;
+        const monthYearInput = document.getElementById("csvMonthYearFilter");
         const monthYear = monthYearInput.value;
-        const baseUrl = "{{ url_for('routes.download_filtered_csv', _external=False) }}";
+        const baseUrl =
+          "{{ url_for('routes.download_filtered_csv', _external=False) }}";
         let downloadUrl = baseUrl + "?";
         const params = [];
 
         if (monthYear) {
-            const year = parseInt(monthYear.split('-')[0], 10);
-            if (isNaN(year) || year < 1990 || year > 2050) {
-                alert("Please select a valid Publication Month/Year between 1990 and 2050.");
-                monthYearInput.value = ''; // Clear the invalid input
-                return; // Stop the download
-            }
-            params.push(`month_year=${encodeURIComponent(monthYear)}`);
+          const year = parseInt(monthYear.split("-")[0], 10);
+          if (isNaN(year) || year < 1990 || year > 2050) {
+            alert(
+              "Please select a valid Publication Month/Year between 1990 and 2050."
+            );
+            monthYearInput.value = ""; // Clear the invalid input
+            return; // Stop the download
+          }
+          params.push(`month_year=${encodeURIComponent(monthYear)}`);
         }
         if (status) {
-            params.push(`status=${encodeURIComponent(status)}`);
+          params.push(`status=${encodeURIComponent(status)}`);
         }
 
-
-        downloadUrl += params.join('&');
+        downloadUrl += params.join("&");
         console.log("Requesting filtered download:", downloadUrl);
         window.location.href = downloadUrl;
         closeDownloadModal();
-    }
-    // Optional: Close modal on outside click
-    window.addEventListener('click', function(event) {
-        if (event.target === document.getElementById('downloadModal')) {
-            closeDownloadModal();
+      }
+      // Optional: Close modal on outside click
+      window.addEventListener("click", function (event) {
+        if (event.target === document.getElementById("downloadModal")) {
+          closeDownloadModal();
         }
-    });
+        if (event.target === document.getElementById("emailReportModal")) {
+          closeEmailModal();
+        }
+      });
+
+      // --- START ADD: Functions for Email Modal ---
+      function openEmailModal() {
+        const filters = {
+          firstName: document.getElementById("firstNameFilter")?.value || "",
+          lastName: document.getElementById("lastNameFilter")?.value || "",
+          city: document.getElementById("cityFilter")?.value || "",
+          province: document.getElementById("provinceFilter")?.value || "",
+        };
+
+        // Store filters in hidden fields (FIXED TEMPLATE LITERALS)
+        for (const key in filters) {
+          const input = document.getElementById(`emailModalFilter_${key}`);
+          if (input) input.value = filters[key];
+        }
+
+        // Display filters in modal (FIXED TEMPLATE STRING)
+        const applied = Object.entries(filters)
+          .filter(([k, v]) => v)
+          .map(
+            ([k, v]) =>
+              `${k
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (s) => s.toUpperCase())}: "${v}"`
+          );
+
+        const filterDisplay = document.getElementById(
+          "emailModalFiltersDisplay"
+        );
+        if (filterDisplay) {
+          filterDisplay.innerHTML =
+            applied.length > 0
+              ? `Applying Filters: ${applied.join(", ")}`
+              : "No filters applied";
+        }
+
+        // Reset UI elements
+        const statusMsg = document.getElementById("emailStatusMessage");
+        if (statusMsg) {
+          statusMsg.textContent = "";
+          statusMsg.className = "text-center p-2 rounded hidden";
+        }
+
+        // Show the modal
+        const modal = document.getElementById("emailReportModal");
+        if (modal) modal.classList.remove("hidden");
+      }
+
+      function closeEmailModal() {
+        const modal = document.getElementById("emailReportModal");
+        if (modal) modal.classList.add("hidden");
+        const recipientsInput = document.getElementById("emailRecipients");
+        if (recipientsInput) recipientsInput.value = "";
+      }
+      function sendFilteredReportEmail() {
+        const recipientsInput = document.getElementById("emailRecipients"),
+          statusMsg = document.getElementById("emailStatusMessage"),
+          sendButton = document.getElementById("emailSendButton"),
+          sendText = document.getElementById("emailSendButtonText"),
+          sendSpinner = document.getElementById("emailSendingSpinner");
+
+        const recipientsRaw = recipientsInput?.value.trim();
+        if (!recipientsRaw) {
+          alert("Enter recipients.");
+          return;
+        }
+
+        const recipients = recipientsRaw
+          .split(",")
+          .map((e) => e.trim())
+          .filter((e) => e);
+        if (!recipients.length) {
+          alert("Enter valid emails.");
+          return;
+        }
+
+        // Get filters from hidden inputs
+        const filtersToSend = {
+          firstName: document.getElementById("emailModalFilter_firstName")
+            ?.value,
+          lastName: document.getElementById("emailModalFilter_lastName")?.value,
+          city: document.getElementById("emailModalFilter_city")?.value,
+          province: document.getElementById("emailModalFilter_province")?.value,
+        };
+
+        const payload = { recipients: recipients, filters: filtersToSend };
+
+        // Update UI state
+        if (statusMsg) {
+          statusMsg.textContent = "";
+          statusMsg.className = "text-center p-2 rounded hidden";
+        }
+        sendButton.disabled = true;
+        sendText.style.display = "none";
+        sendSpinner.style.display = "inline";
+
+        // Send request
+        fetch("{{ url_for('routes.mail_filtered_report') }}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+          .then((res) =>
+            res
+              .json()
+              .then((data) => ({ ok: res.ok, status: res.status, data }))
+          )
+          .then(({ ok, data }) => {
+            if (!ok) throw new Error(data.error || `HTTP error ${status}`); // FIXED TEMPLATE LITERAL
+            if (statusMsg) {
+              statusMsg.textContent = data.message || "Sent!";
+              statusMsg.className =
+                "text-center p-2 rounded text-green-700 bg-green-100";
+              statusMsg.classList.remove("hidden");
+            }
+            setTimeout(closeEmailModal, 2500);
+          })
+          .catch((err) => {
+            console.error("Mail error:", err);
+            if (statusMsg) {
+              statusMsg.textContent = `Error: ${err.message}`; // FIXED TEMPLATE LITERAL
+              statusMsg.className =
+                "text-center p-2 rounded text-red-700 bg-red-100";
+              statusMsg.classList.remove("hidden");
+            }
+          })
+          .finally(() => {
+            sendButton.disabled = false;
+            sendText.style.display = "inline";
+            sendSpinner.style.display = "none";
+          });
+      }
+      // Monthly Report Functions
+      function openMonthlyReportModal() {
+        document
+          .getElementById("monthlyReportModal")
+          .classList.remove("hidden");
+        document.getElementById("monthlyReportDate").value = "";
+        document.getElementById("monthlyReportRecipients").value = "";
+        document.getElementById("monthlyReportStatus").classList.add("hidden");
+        document.body.classList.add("overflow-hidden");
+      }
+
+      function closeMonthlyReportModal() {
+        document.getElementById("monthlyReportModal").classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+      }
+
+      function sendMonthlyReport() {
+        const monthYear = document.getElementById("monthlyReportDate").value;
+        const recipients = document.getElementById(
+          "monthlyReportRecipients"
+        ).value;
+        const statusDiv = document.getElementById("monthlyReportStatus");
+
+        if (!monthYear) {
+          statusDiv.textContent = "Please select a month/year";
+          statusDiv.classList.remove(
+            "hidden",
+            "bg-green-100",
+            "text-green-700"
+          );
+          statusDiv.classList.add("bg-red-100", "text-red-700");
+          return;
+        }
+
+        const validRecipients = recipients
+          .split(",")
+          .map((e) => e.trim())
+          .filter((e) => e.length > 0);
+
+        if (validRecipients.length === 0) {
+          statusDiv.textContent = "Please enter at least one valid email";
+          statusDiv.classList.remove(
+            "hidden",
+            "bg-green-100",
+            "text-green-700"
+          );
+          statusDiv.classList.add("bg-red-100", "text-red-700");
+          return;
+        }
+
+        statusDiv.textContent = "Sending report...";
+        statusDiv.classList.remove("hidden", "bg-red-100", "text-red-700");
+        statusDiv.classList.add("bg-blue-100", "text-blue-700");
+
+        fetch("{{ url_for('routes.mail_filtered_report') }}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            recipients: validRecipients,
+            filters: { month_year: monthYear },
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              statusDiv.textContent = `Error: ${data.error}`;
+              statusDiv.classList.replace("bg-blue-100", "bg-red-100");
+              statusDiv.classList.replace("text-blue-700", "text-red-700");
+            } else {
+              statusDiv.textContent = "Report sent successfully!";
+              statusDiv.classList.replace("bg-blue-100", "bg-green-100");
+              statusDiv.classList.replace("text-blue-700", "text-green-700");
+              setTimeout(closeMonthlyReportModal, 2000);
+            }
+          })
+          .catch((error) => {
+            statusDiv.textContent = `Error: ${error.message}`;
+            statusDiv.classList.replace("bg-blue-100", "bg-red-100");
+            statusDiv.classList.replace("text-blue-700", "text-red-700");
+          });
+      }
     </script>
-
-
-</head>
-<body class="bg-gray-100">
-
-<!-- Announcement Bar -->
-<div class="bg-yellow-100 border-b border-yellow-200 text-sm px-4 py-2 text-center">
-    ⚠️ <strong class="font-semibold">Educational Purpose:</strong> This dashboard is for educational purposes. Obituary
-    data is sourced from <a href="https://www.remembering.ca/" target="_blank"
-                           class="underline text-blue-500">remembering.ca</a>.
-</div>
-
-<!-- Header -->
-<header class="bg-white shadow-md py-4">
-    <div class="container mx-auto px-6 flex justify-between items-center">
-        <div class="text-xl font-bold text-gray-800">📖 Remembering Lancers</div>
-        <nav class="space-x-4">
-            <a href="/" class="hover:text-gray-600">🏠 Lancers Board</a>
-            <!--            <a href="/settings" class="hover:text-gray-600">⚙️ Settings</a>-->
-            <a href="/about" class="hover:text-gray-600">ℹ️ About</a>
-        </nav>
+  </head>
+  <body class="bg-gray-100">
+    <!-- Announcement Bar -->
+   <div class="primary-bg text-white text-sm px-4 py-2 text-center">
+      ⚠️ <strong class="font-semibold">Educational Purpose:</strong> This
+      dashboard is for educational purposes. Obituary data is sourced from
+      <a href="https://www.remembering.ca/" target="_blank" class="underline primary-text">
+        remembering.ca
+      </a>
     </div>
-</header>
 
-<div class="container mx-auto px-6 mt-6 flex">
-    <!-- Sidebar - Advanced Filters -->
+    <!-- Header -->
+    <header class="primary-bg shadow-md py-4">
+      <div class="container mx-auto px-6 flex justify-between items-center">
+        <div class="text-xl font-bold text-white">
+          📖 Remembering Lancers
+        </div>
+        <nav class="space-x-4">
+          <a href="/" class="text-white hover:text-gray-200">🏠 Lancers Board</a>
+          <a href="/about" class="text-white hover:text-gray-200">ℹ️ About</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container mx-auto px-6 mt-6 flex">
+      <!-- Sidebar - Advanced Filters -->
     <aside class="w-72 mr-6 p-6 bg-white rounded-lg shadow-md h-fit sticky top-6">
-        <h3 class="font-semibold text-xl mb-5 text-gray-800"><i class="fas fa-filter mr-2 text-blue-500"></i> Filter
-            Lancers</h3>
+      <h3 class="font-semibold text-xl mb-5 primary-text">
+        <i class="fas fa-filter mr-2 secondary-text"></i> Filter Lancers
+      </h3>
         <form id="filterForm" class="space-y-6">
-            <!-- Increased vertical spacing -->
-            <div>
-                <label for="firstNameFilter" class="block text-gray-700 text-sm font-medium mb-2">
-                    <i class="fas fa-user mr-1 text-gray-500"></i> First Name:
-                </label>
-                <input type="text" class="form-input" id="firstNameFilter" name="firstName" placeholder="Enter first name"
-                       value="{{ request.args.firstName }}">
-            </div>
-            <div>
-                <label for="lastNameFilter" class="block text-gray-700 text-sm font-medium mb-2">
-                    <i class="fas fa-user mr-1 text-gray-500"></i> Last Name:
-                </label>
-                <input type="text" class="form-input" id="lastNameFilter" name="lastName" placeholder="Enter last name"
-                       value="{{ request.args.lastName }}">
-            </div>
-            <div>
-                <label for="cityFilter" class="block text-gray-700 text-sm font-medium mb-2">
-                    <i class="fas fa-city mr-1 text-gray-500"></i> City:
-                </label>
-                <input type="text" class="form-input" id="cityFilter" name="city" placeholder="Enter city name"
-                       value="{{ request.args.city }}">
-            </div>
-            <div>
-                <label for="provinceFilter" class="block text-gray-700 text-sm font-medium mb-2">
-                    <i class="fas fa-map-marker-alt mr-1 text-gray-500"></i> Province:
-                </label>
-                <select id="provinceFilter" class="form-select bg-gray-50" name="province">
-                    <!-- Added light background -->
-                    <option value="">Select Province</option>
-                    <!-- Updated placeholder -->
-                    <option value="Alberta">Alberta</option>
-                    <option value="British Columbia">British Columbia</option>
-                    <option value="Manitoba">Manitoba</option>
-                    <option value="New Brunswick">New Brunswick</option>
-                    <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
-                    <option value="Nova Scotia">Nova Scotia</option>
-                    <option value="Ontario">Ontario</option>
-                    <option value="Prince Edward Island">Prince Edward Island</option>
-                    <option value="Quebec">Quebec</option>
-                    <option value="Saskatchewan">Saskatchewan</option>
-                </select>
-            </div>
+          <!-- Increased vertical spacing -->
+          <div>
+            <label
+              for="firstNameFilter"
+              class="block text-gray-700 text-sm font-medium mb-2"
+            >
+              <i class="fas fa-user mr-1 text-gray-500"></i> First Name:
+            </label>
+            <input
+              type="text"
+              class="form-input"
+              id="firstNameFilter"
+              name="firstName"
+              placeholder="Enter first name"
+              value="{{ request.args.firstName }}"
+            />
+          </div>
+          <div>
+            <label
+              for="lastNameFilter"
+              class="block text-gray-700 text-sm font-medium mb-2"
+            >
+              <i class="fas fa-user mr-1 text-gray-500"></i> Last Name:
+            </label>
+            <input
+              type="text"
+              class="form-input"
+              id="lastNameFilter"
+              name="lastName"
+              placeholder="Enter last name"
+              value="{{ request.args.lastName }}"
+            />
+          </div>
+          <div>
+            <label
+              for="cityFilter"
+              class="block text-gray-700 text-sm font-medium mb-2"
+            >
+              <i class="fas fa-city mr-1 text-gray-500"></i> City:
+            </label>
+            <input
+              type="text"
+              class="form-input"
+              id="cityFilter"
+              name="city"
+              placeholder="Enter city name"
+              value="{{ request.args.city }}"
+            />
+          </div>
+          <div>
+            <label
+              for="provinceFilter"
+              class="block text-gray-700 text-sm font-medium mb-2"
+            >
+              <i class="fas fa-map-marker-alt mr-1 text-gray-500"></i> Province:
+            </label>
+            <select
+              id="provinceFilter"
+              class="form-select bg-gray-50"
+              name="province"
+            >
+              <!-- Added light background -->
+              <option value="">Select Province</option>
+              <!-- Updated placeholder -->
+              <option value="Alberta">Alberta</option>
+              <option value="British Columbia">British Columbia</option>
+              <option value="Manitoba">Manitoba</option>
+              <option value="New Brunswick">New Brunswick</option>
+              <option value="Newfoundland and Labrador">
+                Newfoundland and Labrador
+              </option>
+              <option value="Nova Scotia">Nova Scotia</option>
+              <option value="Ontario">Ontario</option>
+              <option value="Prince Edward Island">Prince Edward Island</option>
+              <option value="Quebec">Quebec</option>
+              <option value="Saskatchewan">Saskatchewan</option>
+            </select>
+          </div>
 
-            <div class="flex justify-center space-x-3 mt-8">
-                <!-- Increased top margin for buttons -->
-                <button type="submit" class="primary-button">
-                    <!-- Using primary-button class -->
-                    🔎 Apply
-                </button>
-                <button type="button" onclick="clearFilters()" class="secondary-button">
-                    <!-- Using secondary-button class -->
-                    🔄 Clear
-                </button>
-            </div>
+          <div class="flex justify-center space-x-3 mt-8">
+            <!-- Increased top margin for buttons -->
+            <button type="submit" class="primary-button">
+              <!-- Using primary-button class -->
+              🔎 Apply
+            </button>
+            <button
+              type="button"
+              onclick="clearFilters()"
+              class="secondary-button"
+            >
+              <!-- Using secondary-button class -->
+              🔄 Clear
+            </button>
+          </div>
         </form>
         <!-- Start of Replacement Download Data Section -->
         <div class="mt-8 p-6 rounded-lg shadow-md border">
-            <h2 class="text-lg font-semibold mb-4 text-gray-800">
-                 <i class="fas fa-download mr-2 text-blue-500"></i> Download Data
-            </h2>
-            <p class="text-sm text-gray-600 mb-4">
-                Download Lancers alumni obituaries data as a CSV file. Apply filters or download all records.
-            </p>
-            <div class="flex flex-col space-y-3">
-                <button onclick="openDownloadModal()" class="primary-button w-full text-center py-2">
-                     <i class="fas fa-filter mr-1"></i> Download Filtered CSV
-                </button>
-                <a href="{{ url_for('routes.download_csv') }}" class="secondary-button w-full text-center py-2 inline-block">
-                    <i class="fas fa-file-csv mr-1"></i> Download All Data
-                </a>
-            </div>
+          <h2 class="text-lg font-semibold mb-4 text-gray-800">
+            <i class="fas fa-download mr-2 text-blue-500"></i> Download Data
+          </h2>
+          <p class="text-sm text-gray-600 mb-4">
+            Download Lancers alumni obituaries data as a CSV file. Apply filters
+            or download all records.
+          </p>
+          <div class="flex flex-col space-y-3">
+            <button
+              onclick="openDownloadModal()"
+              class="primary-button w-full text-center py-2"
+            >
+              <i class="fas fa-filter mr-1"></i> Download Filtered CSV
+            </button>
+            <a
+              href="{{ url_for('routes.download_csv') }}"
+              class="secondary-button w-full text-center py-2 inline-block"
+            >
+              <i class="fas fa-file-csv mr-1"></i> Download All Data
+            </a>
+          </div>
+          <h2 class="text-lg font-semibold mb-4 mt-4 text-gray-800">
+            <i class="fas fa-envelope mr-2 text-blue-500"></i> Email Reports
+          </h2>
+          <div class="flex flex-col space-y-3">
+            <button
+              onclick="openEmailModal()"
+              class="primary-button w-full text-center py-2"
+            >
+              <i class="fas fa-filter mr-1"></i> Mail Filtered Report
+            </button>
+            <button
+              onclick="openMonthlyReportModal()"
+              class="secondary-button text-black w-full text-center py-2"
+            >
+              <i class="fas fa-calendar-alt mr-1"></i> Mail Monthly Report
+            </button>
+          </div>
         </div>
-        <!-- End of Replacement Download Data Section -->
-        <!-- Start of Added Download Filter Modal -->
-<div id="downloadModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden">
-    <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-md bg-white">
-        <div class="flex justify-between items-center border-b pb-3 mb-6">
-            <h3 class="text-2xl font-semibold text-gray-800"><i class="fas fa-filter mr-2"></i> Filter CSV Download</h3>
-            <button onclick="closeDownloadModal()" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">×</button>
-        </div>
-        <form id="downloadFilterForm" class="space-y-6">
-            <div>
-                <label for="csvStatusFilter" class="block text-gray-700 text-sm font-medium mb-2"><i class="fas fa-tags mr-1 text-gray-500"></i> Status:</label>
-                <select id="csvStatusFilter" name="status" class="form-select bg-gray-50 w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    <option value="">All Statuses</option>
-                    <option value="new">New Only</option>
-                    <option value="updated">Updated Only</option>
-                </select>
+        <!-- START ADD: Email Report Modal HTML -->
+        <div
+          id="emailReportModal"
+          class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-50"
+        >
+          <div
+            class="relative mx-auto p-8 border w-full max-w-lg shadow-lg rounded-md bg-white"
+          >
+            <div class="flex justify-between items-center border-b pb-3 mb-6">
+              <h3 class="text-2xl font-semibold text-gray-800">
+                <i class="fas fa-envelope-open-text mr-2"></i> Mail Filtered
+                Report
+              </h3>
+              <button
+                onclick="closeEmailModal()"
+                class="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
             </div>
-            <div>
-                <label for="csvMonthYearFilter" class="block text-gray-700 text-sm font-medium mb-2">
-                    <i class="far fa-calendar-alt mr-1 text-gray-500"></i> Publication Month/Year (1990-2050):
-                </label>
-                <input type="month" id="csvMonthYearFilter" name="month_year"
-                       class="form-input w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                       placeholder="YYYY-MM (1990-2050)"> <!-- Added range to placeholder -->
-                <p class="text-xs text-gray-500 mt-1">Select month/year within 1990-2050. Leave blank for all dates.</p> <!-- Clarified range in help text -->
+            <div class="space-y-6">
+              <p class="text-sm text-gray-600">
+                Enter recipients (comma-separated) to send the report based on
+                filters applied in the sidebar.
+              </p>
+              <div
+                id="emailModalFiltersDisplay"
+                class="text-xs bg-gray-100 p-2 rounded border text-gray-500"
+              >
+                Applying filters: <i>Loading...</i>
+              </div>
+              <div>
+                <label
+                  for="emailRecipients"
+                  class="block text-gray-700 text-sm font-medium mb-2"
+                  ><i class="fas fa-at mr-1 text-gray-500"></i>
+                  Recipients:</label
+                >
+                <input
+                  type="text"
+                  placeholder="e.g., alumni@example.com, director@example.com"
+                  id="emailRecipients"
+                  name="recipients"
+                  required
+                  class="form-input w-full border border-gray-300 rounded-md shadow-sm"
+                />
+                <p class="text-xs text-gray-500 mt-1">
+                  Separate multiple emails with commas.
+                </p>
+              </div>
+              <div
+                id="emailStatusMessage"
+                class="text-center p-2 rounded hidden"
+              ></div>
+              <!-- Hidden inputs to store current sidebar filters -->
+              <input type="hidden" id="emailModalFilter_firstName" /><input
+                type="hidden"
+                id="emailModalFilter_lastName"
+              /><input type="hidden" id="emailModalFilter_city" /><input
+                type="hidden"
+                id="emailModalFilter_province"
+              />
             </div>
             <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
-                <button type="button" onclick="closeDownloadModal()" class="secondary-button py-2 px-4">Cancel</button>
-                <button type="button" onclick="triggerFilteredDownload()" class="primary-button py-2 px-4"><i class="fas fa-download mr-1"></i> Download Filtered</button>
+              <button
+                type="button"
+                onclick="closeEmailModal()"
+                id="emailCancelButton"
+                class="secondary-button py-2 px-4"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onclick="sendFilteredReportEmail()"
+                id="emailSendButton"
+                class="primary-button py-2 px-4"
+              >
+                <span id="emailSendButtonText"
+                  ><i class="fas fa-paper-plane mr-1"></i> Send</span
+                >
+                <span id="emailSendingSpinner" class="hidden"
+                  ><i class="fas fa-spinner fa-spin mr-1"></i> Sending...</span
+                >
+              </button>
             </div>
-        </form>
-    </div>
-</div>
-    </aside>
+          </div>
+        </div>
+        <!-- END ADD: Email Report Modal HTML -->
 
-    <!-- Main Content -->
+        <div
+          id="downloadModal"
+          class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden"
+        >
+          <div
+            class="relative mx-auto p-8 w-full max-w-md shadow-lg rounded-md bg-white"
+          >
+            <div class="flex justify-between items-center border-b pb-3 mb-6 primary-bg text-white">
+              <h3 class="text-2xl font-semibold text-gray-800 secondary-text">
+                <i class="fas fa-filter mr-2"></i> Filter CSV Download
+              </h3>
+              <button
+                onclick="closeDownloadModal()"
+                class="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            <form id="downloadFilterForm" class="space-y-6">
+              <div>
+                <label
+                  for="csvStatusFilter"
+                  class="block text-gray-700 text-sm font-medium mb-2"
+                  ><i class="fas fa-tags mr-1 text-gray-500"></i> Status:</label
+                >
+                <select
+                  id="csvStatusFilter"
+                  name="status"
+                  class="form-select bg-gray-50 w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="">All Statuses</option>
+                  <option value="new">New Only</option>
+                  <option value="updated">Updated Only</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="csvMonthYearFilter"
+                  class="block text-gray-700 text-sm font-medium mb-2"
+                >
+                  <i class="far fa-calendar-alt mr-1 text-gray-500"></i>
+                  Publication Month/Year (1990-2050):
+                </label>
+                <input
+                  type="month"
+                  id="csvMonthYearFilter"
+                  name="month_year"
+                  class="form-input w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  placeholder="YYYY-MM (1990-2050)"
+                />
+                <!-- Added range to placeholder -->
+                <p class="text-xs text-gray-500 mt-1">
+                  Select month/year within 1990-2050. Leave blank for all dates.
+                </p>
+                <!-- Clarified range in help text -->
+              </div>
+              <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
+                <button
+                  type="button"
+                  onclick="closeDownloadModal()"
+                  class="secondary-button py-2 px-4"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onclick="triggerFilteredDownload()"
+                  class="primary-button py-2 px-4"
+                >
+                  <i class="fas fa-download mr-1"></i> Download Filtered
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- Monthly Report Modal -->
+        <div
+          id="monthlyReportModal"
+          class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-50"
+        >
+          <div
+            class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-md bg-white"
+          >
+            <div class="flex justify-between items-center border-b pb-3 mb-6">
+              <h3 class="text-2xl font-semibold text-gray-800">
+                <i class="fas fa-calendar-alt mr-2"></i> Mail Monthly Report
+              </h3>
+              <button
+                onclick="closeMonthlyReportModal()"
+                class="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            <form class="space-y-6">
+              <div>
+                <label class="block text-gray-700 text-sm font-medium mb-2">
+                  <i class="far fa-calendar-alt mr-1 text-gray-500"></i> Select
+                  Month/Year
+                </label>
+                <input
+                  type="month"
+                  id="monthlyReportDate"
+                  class="form-input w-full border border-gray-300 rounded-md shadow-sm"
+                  min="1990-01"
+                  max="{{ datetime.now().strftime('%Y-%m') }}"
+                />
+              </div>
+              <div>
+                <label class="block text-gray-700 text-sm font-medium mb-2">
+                  <i class="fas fa-at mr-1 text-gray-500"></i> Recipients
+                </label>
+                <input
+                  type="text"
+                  id="monthlyReportRecipients"
+                  class="form-input w-full border border-gray-300 rounded-md shadow-sm"
+                  placeholder="email@example.com, another@example.com"
+                />
+                <p class="text-xs text-gray-500 mt-1">
+                  Separate multiple emails with commas
+                </p>
+              </div>
+              <div
+                id="monthlyReportStatus"
+                class="hidden text-center p-2 rounded"
+              ></div>
+            </form>
+            <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
+              <button
+                onclick="closeMonthlyReportModal()"
+                class="secondary-button py-2 px-4"
+              >
+                Cancel
+              </button>
+              <button
+                onclick="sendMonthlyReport()"
+                class="primary-button py-2 px-4"
+              >
+                <i class="fas fa-paper-plane mr-1"></i> Send Report
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
     <main class="flex-1 p-6 bg-white rounded-lg shadow-md">
         <!-- UWindsor Alumni Portrait & Welcome -->
         <div class="flex items-center mb-8">
-            <img src="{{ url_for('static', filename='images/alumnilogo.jpg') }}" alt="University of Windsor Alumni"
-                 class="w-72 mr-6 rounded-md">
-            <div>
-                <h2 class="text-2xl font-semibold text-gray-800 mb-2">Welcome to the Lancers Alumni Obituary Dashboard</h2>
-                <p class="text-gray-700">Explore recent alumni obituaries and manage the scraping process.</p>
-            </div>
+          <img
+            src="{{ url_for('static', filename='images/alumnilogo.jpg') }}"
+            alt="University of Windsor Alumni"
+            class="w-72 mr-6 rounded-md"
+          />
+          <div>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-2">
+              Welcome to the Lancers Alumni Obituary Dashboard
+            </h2>
+            <p class="text-gray-700">
+              Explore recent alumni obituaries and manage the scraping process.
+            </p>
+          </div>
         </div>
 
         <!-- Dashboard Summary Metrics -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div class="bg-blue-100 p-4 rounded-lg shadow-sm border-b-4 border-blue-400">
-                <p class="text-gray-600 text-sm">Total Lancers Obituaries</p>
-                <p class="text-2xl font-bold text-gray-800" id="alumniCount">{{ total_alumni }}</p>
-            </div>
-            <div class="bg-green-100 p-4 rounded-lg shadow-sm border-b-4 border-green-400">
-                <p class="text-gray-600 text-sm">Total Obituaries Processed</p>
-                <p class="text-2xl font-bold text-gray-800" id="entriesFetched">{{ total_obituaries }}</p>
-            </div>
-            <div class="bg-yellow-100 p-4 rounded-lg shadow-sm border-b-4 border-yellow-400">
-                <p class="text-gray-600 text-sm">Total Cities Processed</p>
-                <p class="text-2xl font-bold text-gray-800" id="citiesFetched">{{ total_cities }}</p>
-            </div>
+        <div class="primary-bg p-4 rounded-lg shadow-sm text-white">
+          <p class="text-sm">Total Lancers Obituaries</p>
+          <p class="text-2xl font-bold">{{ total_alumni }}</p>
         </div>
+        <div class="secondary-bg p-4 rounded-lg shadow-sm">
+          <p class="text-sm text-gray-800">Total Obituaries Processed</p>
+          <p class="text-2xl font-bold text-gray-800">{{ total_obituaries }}</p>
+        </div>
+        <div class="primary-bg p-4 rounded-lg shadow-sm text-white">
+          <p class="text-sm">Total Cities Processed</p>
+          <p class="text-2xl font-bold">{{ total_cities }}</p>
+        </div>
+      </div>
         <!-- Scraper Controls -->
-        <!-- index.html - Scraper Controls Section - RE-CORRECTED Button Logic -->
-        <div class="mb-6 p-6 rounded-lg shadow-md border">
-            <h2 class="text-lg font-semibold mb-3">⚙️ Scraper Controls</h2>
-            <p class="text-gray-600">Start or stop the obituary scraping process.</p>
-            <div class="mt-4 flex space-x-3">
-                <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-                        onclick="startScraping()" id="startButton">▶ Start
-                </button>
-                <button class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                        onclick="stopScraping()" disabled id="stopButton">⏹ Stop
-                </button>
-            </div>
-            <p class="mt-2 text-gray-500" id="scrapingStatus">Not running</p>
-            <p class="mt-2 text-gray-500">Last Scrape Time: <span id="lastScrapeTimeDisplay">Never</span></p>
+    <div class="mb-6 p-6 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold mb-3 primary-text">⚙️ Scraper Controls</h2>
+          <p class="text-gray-600">
+            Start or stop the obituary scraping process.
+          </p>
+          <div class="mt-4 flex space-x-3">
+            <button
+              class="primary-button text-white px-4 py-2 rounded-lg primary-button:hover"
+              onclick="startScraping()"
+              id="startButton"
+            >
+              ▶ Start
+            </button>
+            <button
+              class="secondary-button text-white px-4 py-2 rounded-lg secondary-button:hover"
+              onclick="stopScraping()"
+              disabled
+              id="stopButton"
+            >
+              ⏹ Stop
+            </button>
+          </div>
+          <p class="mt-2 text-gray-500" id="scrapingStatus">Not running</p>
+          <p class="mt-2 text-gray-500">
+            Last Scrape Time: <span id="lastScrapeTimeDisplay">Never</span>
+          </p>
         </div>
-
 
         <!-- Recent Obituaries Section -->
         <div class="rounded-lg shadow-md border">
-            <div class="flex justify-between items-center p-4 border-b">
-                <h2 class="text-lg font-semibold">📜 Recent Lancers Obituaries</h2>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                        onclick="refreshObituaries()">
-                    🔄 Refresh
-                </button>
-            </div>
-            <div id="loading-spinner" class="hidden flex">
-                <i class="fas fa-spinner fa-spin fa-2x"></i><p class="p-2 text-gray-500">Loading Obituaries...</p>
-            </div>
-            <div id="noNewEntries" class="hidden">
-                <p class="p-2 text-gray-500"> No new entries found.</p>
-            </div>
+          <div class="flex justify-between items-center p-4 border-b">
+            <h2 class="text-lg font-semibold">📜 Recent Lancers Obituaries</h2>
+            <button
+              class="primary-button text-white px-4 py-2 rounded-lg primary-button:hover"
+              onclick="refreshObituaries()"
+            >
+              🔄 Refresh
+            </button>
+          </div>
+          <div id="loading-spinner" class="hidden flex">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p class="p-2 text-gray-500">Loading Obituaries...</p>
+          </div>
+          <div id="noNewEntries" class="hidden">
+            <p class="p-2 text-gray-500">No new entries found.</p>
+          </div>
 
-            <div id="obituaryAccordionContainer">
-                <!-- Accordion will be generated here by JavaScript -->
-            </div>
+          <div id="obituaryAccordionContainer">
+            <!-- Accordion will be generated here by JavaScript -->
+          </div>
         </div>
-
-    </main>
-</div>
-<div class="container mx-auto p-6">
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold mb-4">🌍 Lancers Locations</h2>
-        <div id="map" style="height: 600px; width: 100%;"></div>
+      </main>
     </div>
-</div>
+    <div class="container mx-auto p-6">
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-4 primary-text">🌍 Lancers Locations</h2>
+        <div id="map" style="height: 600px; width: 100%"></div>
+      </div>
+    </div>
 
+    <script>
+      // Moved the map script to be after the modal script for better organization, not strictly necessary for error fix but good practice.
+      document.addEventListener("DOMContentLoaded", function () {
+        const map = L.map("map", {
+          // ... other map options ...
+        }).setView([56.13, -106.346], 5);
 
-<script> // Moved the map script to be after the modal script for better organization, not strictly necessary for error fix but good practice.
-    document.addEventListener('DOMContentLoaded', function() {
-        const map = L.map('map', {
-            // ... other map options ...
-        }).setView([56.130, -106.346], 5);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(map);
 
         function createClusterIcon(count) {
-             // Corrected HTML string construction - using string concatenation instead of template literal for simplicity in this case
-            return L.divIcon({
-                className: 'custom-cluster-marker',
-                html: '<div><span>' + count + '</span></div>', // String concatenation for clarity - **NO CHANGE HERE AS REQUESTED**
-                iconSize: [40, 40],
-                iconAnchor: [20, 20],
-                popupAnchor: [0, -20]
-            });
+          // Corrected HTML string construction - using string concatenation instead of template literal for simplicity in this case
+          return L.divIcon({
+            className: "custom-cluster-marker",
+            html: "<div><span>" + count + "</span></div>", // String concatenation for clarity - **NO CHANGE HERE AS REQUESTED**
+            iconSize: [40, 40],
+            iconAnchor: [20, 20],
+            popupAnchor: [0, -20],
+          });
         }
 
+        fetch("/get_obituaries")
+          .then((response) => response.json())
+          .then((obituaries) => {
+            const locationGroups = {};
+            obituaries.forEach((obit) => {
+              if (obit.latitude && obit.longitude) {
+                // Corrected template literal for locationKey **NO CHANGE HERE AS REQUESTED**
+                const locationKey = `${obit.latitude},${obit.longitude}`;
+                if (!locationGroups[locationKey]) {
+                  locationGroups[locationKey] = [];
+                }
+                locationGroups[locationKey].push(obit);
+              }
+            });
 
-        fetch('/get_obituaries')
-            .then(response => response.json())
-            .then(obituaries => {
-                const locationGroups = {};
-                obituaries.forEach(obit => {
-                    if (obit.latitude && obit.longitude) {
-                         // Corrected template literal for locationKey **NO CHANGE HERE AS REQUESTED**
-                        const locationKey = `${obit.latitude},${obit.longitude}`;
-                        if (!locationGroups[locationKey]) {
-                            locationGroups[locationKey] = [];
-                        }
-                        locationGroups[locationKey].push(obit);
-                    }
-                });
+            const markers = L.markerClusterGroup(); // Use MarkerClusterGroup
 
-                const markers = L.markerClusterGroup(); // Use MarkerClusterGroup
+            for (const locationKey in locationGroups) {
+              if (locationGroups.hasOwnProperty(locationKey)) {
+                const group = locationGroups[locationKey];
+                const [latitude, longitude] = locationKey
+                  .split(",")
+                  .map(Number);
+                const count = group.length;
 
-                for (const locationKey in locationGroups) {
-                    if (locationGroups.hasOwnProperty(locationKey)) {
-                        const group = locationGroups[locationKey];
-                        const [latitude, longitude] = locationKey.split(',').map(Number);
-                        const count = group.length;
-
-                        // Corrected and improved template literal for popupContent - ensuring valid HTML string **NO CHANGE HERE AS REQUESTED**
-                        let popupContent = `
+                // Corrected and improved template literal for popupContent - ensuring valid HTML string **NO CHANGE HERE AS REQUESTED**
+                let popupContent = `
                             <div class="leaflet-popup-content-wrapper" style="max-height: 250px; overflow-y: auto;">
                                 <div class="p-2 max-w-xs">
                                     <h3 class="font-bold text-lg text-center text-gray-900 mb-2 sticky top-0 bg-white py-1">Lancers (${count})</h3>
                                     <ul class="obituary-list">
-                                    ${group.map(obit => `
+                                    ${group
+                                      .map(
+                                        (obit) => `
                                         <li class="mb-4 border-b pb-2 last:border-b-0 last:mb-0">
-                                            <h4 class="font-semibold text-md text-gray-800">${obit.name}</h4>
-                                            <p class="text-sm text-gray-700">📍 <strong>${obit.city}, ${obit.province}</strong></p>
-                                            <p class="text-sm text-gray-600">📅 ${obit.death_date || 'Unknown date'} </p>
-                                            <a href="/obituary/${obit.id}" target="_blank" class="text-blue-600 font-semibold hover:underline mt-1 block">
+                                            <h4 class="font-semibold text-md text-gray-800">${
+                                              obit.name
+                                            }</h4>
+                                            <p class="text-sm text-gray-700">📍 <strong>${
+                                              obit.city
+                                            }, ${obit.province}</strong></p>
+                                            <p class="text-sm text-gray-600">📅 ${
+                                              obit.death_date || "Unknown date"
+                                            } </p>
+                                            <a href="/obituary/${
+                                              obit.id
+                                            }" target="_blank" class="text-blue-600 font-semibold hover:underline mt-1 block">
                                                 View Details →
                                             </a>
-                                        </li>`).join('')}
+                                        </li>`
+                                      )
+                                      .join("")}
                                     </ul>
                                 </div>
                             </div>
                         `;
 
-                        const marker = L.marker([latitude, longitude]
-                            // If NOT using MarkerClusterGroup, uncomment the icon line below
-                            // , { icon: createClusterIcon(count) }
-                            ).bindPopup(popupContent);
+                const marker = L.marker(
+                  [latitude, longitude]
+                  // If NOT using MarkerClusterGroup, uncomment the icon line below
+                  // , { icon: createClusterIcon(count) }
+                ).bindPopup(popupContent);
 
-                         markers.addLayer(marker); // Add marker to the cluster group
-                        // If NOT using MarkerClusterGroup, use: marker.addTo(map);
-                    }
-                }
-                 map.addLayer(markers); // Add the cluster group to the map
-            })
-            .catch(error => console.error("Error fetching obituaries for map:", error)); // Add error handling
+                markers.addLayer(marker); // Add marker to the cluster group
+                // If NOT using MarkerClusterGroup, use: marker.addTo(map);
+              }
+            }
+            map.addLayer(markers); // Add the cluster group to the map
+          })
+          .catch((error) =>
+            console.error("Error fetching obituaries for map:", error)
+          ); // Add error handling
 
-        const legend = L.control({position: 'bottomright'});
+        const legend = L.control({ position: "bottomright" });
         legend.onAdd = function () {
-            const div = L.DomUtil.create('div', 'map-legend p-3 rounded-lg shadow-lg bg-white border border-gray-300');
-             // Corrected template literal for map legend **NO CHANGE HERE AS REQUESTED**
-            div.innerHTML = `
+          const div = L.DomUtil.create(
+            "div",
+            "map-legend p-3 rounded-lg shadow-lg bg-white border border-gray-300"
+          );
+          // Corrected template literal for map legend **NO CHANGE HERE AS REQUESTED**
+          div.innerHTML = `
                 <h4 class="font-bold text-md text-center mb-2">🗺️ Map Legend</h4>
                 <div class="flex items-center">
                     <div class="custom-cluster-marker-legend mr-2"><span>+</span></div> <!-- Simplified legend icon -->
                     <span class="text-xs">Lancers Locations (Clusters)</span>
                 </div>
             `;
-            return div;
+          return div;
         };
         legend.addTo(map);
 
-         // Keep other DOMContentLoaded logic if any (like updateStatus calls etc.)
-        if (typeof updateStatus === "function") { updateStatus(); }
-
-    }); // END OF DOMContentLoaded Listener
-</script>
-
-
-</body>
+        // Keep other DOMContentLoaded logic if any (like updateStatus calls etc.)
+        if (typeof updateStatus === "function") {
+          updateStatus();
+        }
+      }); // END OF DOMContentLoaded Listener
+    </script>
+  </body>
 </html>
