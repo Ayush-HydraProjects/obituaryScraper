@@ -1,7 +1,9 @@
 # app/routes.py
+import io
 import logging
 import os
-from flask import render_template, jsonify, request, redirect, url_for, send_file, current_app
+from flask import render_template, jsonify, request, redirect, url_for, send_file, current_app, stream_with_context, \
+    Response
 from flask import flash
 from sqlalchemy import extract, func, text
 from sqlalchemy.orm import aliased
@@ -14,6 +16,7 @@ import threading
 import time
 import csv
 from datetime import datetime
+import tempfile
 
 bp = Blueprint('routes', __name__) # Create a Blueprint instance
 
@@ -312,47 +315,140 @@ def obituary_detail(obituary_id):
         return render_template('obituary_detail.html', obituary=obituary)
 
 
-def generate_csv():
-    """Helper function to generate a fresh CSV file from the database."""
+def generate_csv_to_file():
+    """Helper function to generate a fresh CSV file of ALL data to a temporary file."""
     with current_app.app_context():
         obituaries = DistinctObituary.query.order_by(DistinctObituary.publication_date.desc()).all()
-
         if not obituaries:
-            return None  # No data available
+            logging.warning("generate_csv_to_file: No obituaries found.")
+            return None # Return None if no data
 
-        csv_file_path = "obituaries_data.csv"
+        # Use tempfile for reliable temporary file creation
+        try:
+            # delete=False is important so the file isn't deleted when the 'with' block exits
+            # It allows send_file to access it later. We clean it up manually in the route.
+            with tempfile.NamedTemporaryFile(mode='w', newline='', encoding='utf-8', suffix='.csv', delete=False) as temp_csv_file:
+                csv_file_path = temp_csv_file.name # Get the absolute path
+                logging.info(f"Generating temporary CSV for all data at: {csv_file_path}")
 
-        with open(csv_file_path, 'w', newline='') as csvfile:
-            fieldnames = ['id', 'name', 'first_name', 'last_name', 'city', 'province', 'birth_date',
-                          'death_date', 'obituary_url', 'tags'] # Added tags
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
+                fieldnames = ['id', 'name', 'first_name', 'last_name', 'city', 'province',
+                              'birth_date', 'death_date', 'publication_date',
+                              'obituary_url', 'tags', 'funeral_home',
+                              'latitude', 'longitude']
+                writer = csv.DictWriter(temp_csv_file, fieldnames=fieldnames, extrasaction='ignore')
+                writer.writeheader()
+                for obit in obituaries:
+                    writer.writerow({
+                        'id': obit.id, 'name': obit.name, 'first_name': obit.first_name,
+                        'last_name': obit.last_name, 'city': obit.city, 'province': obit.province,
+                        'birth_date': obit.birth_date, 'death_date': obit.death_date,
+                        'publication_date': obit.publication_date.strftime('%Y-%m-%d') if obit.publication_date else '',
+                        'obituary_url': obit.obituary_url, 'tags': obit.tags,
+                        'funeral_home': obit.funeral_home, 'latitude': obit.latitude,
+                        'longitude': obit.longitude,
+                    })
+            # File is now written and closed, but still exists because delete=False
+            logging.info(f"Successfully generated temporary CSV: {csv_file_path} with {len(obituaries)} entries.")
+            return csv_file_path # Return the path
 
-            for obit in obituaries:
-                writer.writerow({
-                    'id': obit.id,
-                    'name': obit.name,
-                    'first_name': obit.first_name,
-                    'last_name': obit.last_name,
-                    'obituary_url': obit.obituary_url,
-                    'city': obit.city,
-                    'province': obit.province,
-                    'birth_date': obit.birth_date,
-                    'death_date': obit.death_date,
-                    'tags': obit.tags, # Added tags
-                })
-
-        return csv_file_path  # Return the file path
+        except IOError as e:
+            logging.error(f"Error writing temporary CSV: {e}")
+            # Attempt cleanup if file path was obtained and file exists
+            if 'csv_file_path' in locals() and os.path.exists(csv_file_path):
+                try: os.remove(csv_file_path)
+                except OSError as remove_error: logging.error(f"Error removing partial CSV {csv_file_path}: {remove_error}")
+            return None # Return None on error
+        except Exception as e: # Catch other potential errors during file creation
+            logging.error(f"Unexpected error during temp file creation: {e}")
+            return None
 
 
 @bp.route('/download_csv')
 def download_csv():
-    """Route to generate and download obituaries data as CSV."""
-    csv_file = generate_csv()  # Generate CSV before downloading
-    if not csv_file:
-        return jsonify({'error': 'No obituaries available to download'}), 404
+    """Route to generate and download ALL obituaries data as CSV."""
+    logging.info("Request received for downloading all data CSV.")
+    csv_file_path = generate_csv_to_file() # Uses the helper below
+    if not csv_file_path:
+        flash('No obituaries available to download.', 'warning')
+        logging.warning("No data available for 'Download All CSV'. Redirecting.")
+        return redirect(url_for('routes.dashboard'))
 
-    return send_file(csv_file, as_attachment=True, download_name="obituaries.csv", mimetype="text/csv")
+    try:
+        logging.info(f"Sending temporary CSV file: {csv_file_path}")
+        return send_file(
+            csv_file_path,
+            as_attachment=True,
+            download_name="all_lancers_obituaries.csv",
+            mimetype="text/csv"
+        )
+    finally:
+        if csv_file_path and os.path.exists(csv_file_path):
+             try:
+                 os.remove(csv_file_path)
+                 logging.info(f"Removed temporary CSV file: {csv_file_path}")
+             except OSError as e:
+                 logging.error(f"Error removing temporary CSV file {csv_file_path}: {e}")
+
+@bp.route('/download_filtered_csv')
+def download_filtered_csv():
+    """Route to generate and download FILTERED obituaries data as CSV."""
+    status_filter = request.args.get('status', None)
+    month_year_filter = request.args.get('month_year', None)
+    logging.info(f"Filtered CSV download request. Status: '{status_filter}', Month/Year: '{month_year_filter}'")
+
+    with current_app.app_context():
+        query = DistinctObituary.query
+        if status_filter in ['new', 'updated']:
+            query = query.filter(DistinctObituary.tags == status_filter)
+        year_filter, month_filter = None, None
+        if month_year_filter:
+            try:
+                year_filter = int(month_year_filter.split('-')[0])
+                month_filter = int(month_year_filter.split('-')[1])
+                if not (1 <= month_filter <= 12 and 1990 < year_filter < 2050): raise ValueError("Date range invalid")
+                query = query.filter(DistinctObituary.publication_date != None)
+                query = query.filter(extract('year', DistinctObituary.publication_date) == year_filter)
+                query = query.filter(extract('month', DistinctObituary.publication_date) == month_filter)
+            except Exception as e:
+                logging.warning(f"Invalid month_year format '{month_year_filter}'. Ignoring filter. Error: {e}")
+                year_filter, month_filter = None, None
+
+        filtered_obituaries = query.order_by(DistinctObituary.publication_date.desc()).all()
+        logging.info(f"Found {len(filtered_obituaries)} obituaries matching filters.")
+        if not filtered_obituaries:
+             flash('No obituaries found matching the selected filters.', 'warning')
+             return redirect(url_for('routes.dashboard'))
+
+        output = io.StringIO()
+        fieldnames = ['id', 'name', 'first_name', 'last_name', 'city', 'province',
+                      'birth_date', 'death_date', 'publication_date',
+                      'obituary_url', 'tags', 'funeral_home',
+                      'latitude', 'longitude']
+        writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction='ignore')
+        writer.writeheader()
+        for obit in filtered_obituaries:
+             writer.writerow({
+                 'id': obit.id, 'name': obit.name, 'first_name': obit.first_name,
+                 'last_name': obit.last_name, 'city': obit.city, 'province': obit.province,
+                 'birth_date': obit.birth_date, 'death_date': obit.death_date,
+                 'publication_date': obit.publication_date.strftime('%Y-%m-%d') if obit.publication_date else '',
+                 'obituary_url': obit.obituary_url, 'tags': obit.tags,
+                 'funeral_home': obit.funeral_home, 'latitude': obit.latitude,
+                 'longitude': obit.longitude,
+             })
+
+        output.seek(0)
+        filename_parts = ["lancers_obituaries"]
+        if status_filter: filename_parts.append(status_filter)
+        if year_filter and month_filter: filename_parts.append(f"{year_filter}-{month_filter:02d}")
+        filename = "_".join(filename_parts) + ".csv"
+        logging.info(f"Generating response with filename: {filename}")
+
+        return Response(
+            stream_with_context(output.getvalue()),
+            mimetype="text/csv",
+            headers={"Content-Disposition": f"attachment;filename={filename}"}
+        )
 
 
 @bp.route('/about')

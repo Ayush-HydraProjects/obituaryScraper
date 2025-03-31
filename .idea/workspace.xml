@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8b1d3ac4-26a5-4a40-b852-211847559101" name="Changes" comment="lancer update">
-      <change afterPath="$PROJECT_DIR$/entrypoint.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/obituaryScraper.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/obituaryScraper.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -195,7 +196,9 @@
       <workItem from="1743172168106" duration="201000" />
       <workItem from="1743172385188" duration="1616000" />
       <workItem from="1743175381827" duration="521000" />
-      <workItem from="1743175920390" duration="9681000" />
+      <workItem from="1743175920390" duration="12045000" />
+      <workItem from="1743393053403" duration="5487000" />
+      <workItem from="1743439464083" duration="1507000" />
     </task>
     <task id="LOCAL-00001" summary="lancer update">
       <option name="closed" value="true" />

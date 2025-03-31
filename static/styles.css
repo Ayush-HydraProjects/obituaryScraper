@@ -60,7 +60,6 @@
         background-color: #94a3b8; /* Tailwind gray-400 - a lighter gray */
         color: #cbd5e0; /* Tailwind gray-200 - very light gray text */
         cursor: not-allowed; /* Indicate non-interactiveness */
-        opacity: 0.7; /* Slightly reduce opacity */
         box-shadow: none; /* Remove focus shadow if present */
         /* You can add more styles to further indicate disabled state if needed */
     }
