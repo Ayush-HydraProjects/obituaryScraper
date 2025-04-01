@@ -42,13 +42,10 @@ def create_app():
         MAIL_SERVER='smtp.gmail.com',
         MAIL_PORT=587,
         MAIL_USE_TLS=True,
-        MAIL_USERNAME='parekhayush0211@gmail.com',  # Must match exactly
-        MAIL_PASSWORD='gdwp aadd jqny ikrr',  # Not your Gmail password
-        MAIL_DEFAULT_SENDER=('Lancers Dashboard', 'parekhayush0211@gmail.com')
+        MAIL_USERNAME='rememberinglancers@gmail.com',  # Must match exactly
+        MAIL_PASSWORD='zcim whvt xrvf beay',  # Not your Gmail password
+        MAIL_DEFAULT_SENDER=('Lancers Updates', 'rememberinglancers@gmail.com')
     )
-
-    print(f"Mail username: {app.config['MAIL_USERNAME']}")
-    print(f"Mail password set: {bool(app.config['MAIL_PASSWORD'])}")
 
     db.init_app(app)
     migrate.init_app(app, db)
