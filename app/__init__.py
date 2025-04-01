@@ -42,8 +42,8 @@ def create_app():
         MAIL_SERVER='smtp.gmail.com',
         MAIL_PORT=587,
         MAIL_USE_TLS=True,
-        MAIL_USERNAME='rememberinglancers@gmail.com',  # Must match exactly
-        MAIL_PASSWORD='zcim whvt xrvf beay',  # Not your Gmail password
+        MAIL_USERNAME='rememberinglancers@gmail.com',
+        MAIL_PASSWORD='zcim whvt xrvf beay',
         MAIL_DEFAULT_SENDER=('Lancers Updates', 'rememberinglancers@gmail.com')
     )
 
