@@ -37,3 +37,5 @@ numpy==1.26.4
 # Security
 certifi==2024.6.2  # Updated to latest
 urllib3==2.2.1  # Slightly downgraded for requests compatibility
+
+flask_mail == 0.10.0

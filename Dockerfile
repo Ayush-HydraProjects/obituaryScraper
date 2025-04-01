@@ -9,7 +9,7 @@ RUN apt-get update -y && \
     apt-get install --no-install-recommends -y \
     build-essential \
     python3-dev \
-    postgresql-client \  # Add PostgreSQL client
+    postgresql-client \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
