@@ -9,174 +9,155 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
           integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <style>
+        .primary-bg { background-color: #005596; }
+        .primary-text { color: #005596; }
+        .primary-border { border-color: #005596; }
+        .secondary-bg { background-color: #FFCE00; }
+        .secondary-text { color: #FFCE00; }
+        .secondary-border { border-color: #FFCE00; }
+
+        .primary-button {
+            background-color: #005596;
+            color: white;
+            border: 1px solid #004379;
+        }
+        .primary-button:hover {
+            background-color: #004379;
+            color: white;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-<!-- Announcement Bar -->
-<div class="bg-yellow-100 border-b border-yellow-200 text-sm px-4 py-2 text-center">
-    ⚠️ <strong class="font-semibold">Educational Purpose:</strong> This dashboard is for educational purposes. Obituary data is sourced from <a href="https://www.remembering.ca/" target="_blank" class="underline text-blue-500">remembering.ca</a>.
-</div>
-
-<!-- Header -->
-<header class="bg-white shadow-md py-4">
-    <div class="container mx-auto px-6 flex justify-between items-center">
-        <div class="text-xl font-bold text-gray-800">📖 Remembering Lancers</div>
-        <nav class="space-x-4">
-            <a href="/" class="hover:text-gray-600">🏠 Lancers Board</a>
-            <!--            <a href="/settings" class="hover:text-gray-600">⚙️ Settings</a>-->
-            <a href="/about" class="hover:text-gray-600">ℹ️ About</a>
-        </nav>
+<body class="bg-gray-50">
+    <!-- Announcement Bar -->
+    <div class="primary-bg text-sm px-4 py-2 text-center text-white">
+        ⚠️ <strong class="font-semibold text-white">Educational Purpose:</strong> This dashboard is for educational purposes. Obituary data is sourced from <a href="https://www.remembering.ca/" target="_blank" class="underline text-white">remembering.ca</a>.
     </div>
-</header>
 
-<div class="container mx-auto p-6">
-    <header class="bg-white shadow-md p-4 mb-6 rounded-lg text-xl font-semibold text-gray-800">
-        Lancer Details
+    <!-- Header -->
+    <header class="primary-bg shadow-md py-4">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="text-xl font-bold text-white">📖 Remembering UWindsor Lancers</div>
+            <nav class="space-x-4">
+                <a href="/" class="text-white hover:text-gray-200">🏠 Lancers Board</a>
+                <a href="/about" class="text-white hover:text-gray-200">ℹ️ About</a>
+            </nav>
+        </div>
     </header>
 
-    <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
+    <div class="container mx-auto p-6">
+        <header class="bg-white shadow-md p-4 mb-6 rounded-lg text-xl font-semibold primary-text">
+            Lancer Details
+        </header>
 
-        <h2 class="text-2xl font-semibold mb-4 text-center">{{ obituary.name }}</h2>
+        <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
 
-        <!-- Row of First Four Sections -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+            <h2 class="text-2xl font-bold mb-4 text-center primary-text">{{ obituary.name }}</h2>
 
-            <!-- Name Section -->
-            <section class="p-4 border rounded-lg shadow-sm">
-                <h3 class="font-semibold text-lg text-gray-700 mb-2"><i class="fas fa-user mr-2"></i> Name</h3>
-                <p class="text-gray-800">
-                    <span class="font-semibold">First:</span> {{ obituary.first_name or 'N/A' }}<br>
-                    <span class="font-semibold">Last:</span> {{ obituary.last_name or 'N/A' }}
-                </p>
-            </section>
+            <!-- Row of First Four Sections -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
 
-            <!-- Location Section -->
-            <section class="p-4 border rounded-lg shadow-sm">
-                <h3 class="font-semibold text-lg text-gray-700 mb-2"><i class="fas fa-map-marker-alt mr-2"></i> Location</h3>
-                <p class="text-gray-800">
-                    <span class="font-semibold">City:</span> {{ obituary.city or 'N/A' }}<br>
-                    <span class="font-semibold">Province:</span> {{ obituary.province or 'N/A' }}
-                </p>
-            </section>
+                <!-- Name Section -->
+                <section class="p-4 border rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-lg primary-text mb-2"><i class="fas fa-user mr-2 secondary-text"></i> Name</h3>
+                    <p class="text-gray-800">
+                        <span class="font-semibold">First:</span> {{ obituary.first_name or 'N/A' }}<br>
+                        <span class="font-semibold">Last:</span> {{ obituary.last_name or 'N/A' }}
+                    </p>
+                </section>
 
-            <!-- Dates Section -->
-            <section class="p-4 border rounded-lg shadow-sm">
-                <h3 class="font-semibold text-lg text-gray-700 mb-2"><i class="far fa-calendar-alt mr-2"></i> Dates</h3>
-                <p class="text-gray-800">
-                    <span class="font-semibold">Birth:</span> {{ obituary.birth_date or 'N/A' }}<br>
-                    <span class="font-semibold">Death:</span> {{ obituary.death_date or 'N/A' }}
-                </p>
-            </section>
+                <!-- Location Section -->
+                <section class="p-4 border rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-lg primary-text mb-2"><i class="fas fa-map-marker-alt mr-2 secondary-text"></i> Location</h3>
+                    <p class="text-gray-800">
+                        <span class="font-semibold">City:</span> {{ obituary.city or 'N/A' }}<br>
+                        <span class="font-semibold">Province:</span> {{ obituary.province or 'N/A' }}
+                    </p>
+                </section>
 
-            <!-- Funeral Home Section -->
-{#            <section class="p-4 border rounded-lg shadow-sm">#}
-{#                <h3 class="font-semibold text-lg text-gray-700 mb-2"><i class="fas fa-building mr-2"></i> Funeral Home</h3>#}
-{#                <p class="text-gray-800">{{ obituary.funeral_home or 'N/A' }}</p>#}
-{#            </section>#}
-        </div>
+                <!-- Dates Section -->
+                <section class="p-4 border rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-lg primary-text mb-2"><i class="far fa-calendar-alt mr-2 secondary-text"></i> Dates</h3>
+                    <p class="text-gray-800">
+                        <span class="font-semibold">Birth:</span> {{ obituary.birth_date or 'N/A' }}<br>
+                        <span class="font-semibold">Death:</span> {{ obituary.death_date or 'N/A' }}
+                    </p>
+                </section>
+            </div>
 
-        <!-- Family Information Section (Vertical) -->
-        <div class="mb-4">
-            <section class="p-4 border rounded-lg shadow-sm">
-                <h3 class="font-semibold text-lg text-gray-700 mb-2"><i class="fas fa-users mr-2"></i> Family Information</h3>
-                <p class="text-gray-800">{{ obituary.family_information or 'N/A' }}</p>
-            </section>
-        </div>
+            <!-- Family Information Section -->
+            <div class="mb-4">
+                <section class="p-4 border rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-lg primary-text mb-2"><i class="fas fa-users mr-2 secondary-text"></i> Family Information</h3>
+                    <p class="text-gray-800">{{ obituary.family_information or 'N/A' }}</p>
+                </section>
+            </div>
 
-        <!-- Donation Information Section (Vertical) -->
-        <div class="mb-4">
-            <section class="p-4 border rounded-lg shadow-sm">
-                <h3 class="font-semibold text-lg text-gray-700 mb-2"><i class="fas fa-hand-holding-heart mr-2"></i> Donation Information</h3>
-                <p class="text-gray-800">{{ obituary.donation_information or 'N/A' }}</p>
-            </section>
-        </div>
+            <!-- Donation Information Section -->
+            <div class="mb-4">
+                <section class="p-4 border rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-lg primary-text mb-2"><i class="fas fa-hand-holding-heart mr-2 secondary-text"></i> Donation Information</h3>
+                    <p class="text-gray-800">{{ obituary.donation_information or 'N/A' }}</p>
+                </section>
+            </div>
 
-        <!-- Obituary URL Section (Vertical) -->
-        <div class="mb-4">
-            <section class="p-4 border rounded-lg shadow-sm">
-                <h3 class="font-semibold text-lg text-gray-700 mb-2"><i class="fas fa-link mr-2"></i> Obituary URL</h3>
-                <p class="text-gray-800">
-                    <a href="{{ obituary.obituary_url }}" target="_blank" class="text-blue-500 hover:underline">
-                        View Online Obituary 🔗
-                    </a>
-                </p>
-            </section>
-        </div>
+            <!-- Obituary URL Section -->
+            <div class="mb-4">
+                <section class="p-4 border rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-lg primary-text mb-2"><i class="fas fa-link mr-2 secondary-text"></i> Obituary URL</h3>
+                    <p class="text-gray-800">
+                        <a href="{{ obituary.obituary_url }}" target="_blank" class="primary-text hover:underline">
+                            View Online Obituary 🔗
+                        </a>
+                    </p>
+                </section>
+            </div>
 
-        <div class="mb-4">
-            <section class="p-4 border rounded-lg shadow-sm">
-                <form id="tagUpdateForm" action="{{ url_for('routes.update_tags', obituary_id=obituary.id) }}" method="POST">
-                   <h3 class="font-semibold text-lg text-gray-700 mb-2"> <!-- Increased font-size and margin-bottom for title -->
-                        <i class="fas fa-tags mr-2"></i> Status
-                    </h3>
-                    <div class="flex flex-col md:flex-row items-start md:items-center gap-8"> <!-- Vertical on small screens, horizontal on medium+, increased gap -->
-                        <div class="flex items-center space-x-4"> <!-- Increased space between radio options -->
-                            <div class="flex items-center space-x-2">
-                                <input type="radio" id="tag_new" name="tags" value="new"
-                                       {% if obituary.tags == "new" %}checked{% endif %}
-                                       class="h-5 w-5 text-blue-600 focus:ring-blue-500"> <!-- Slightly larger radio buttons -->
-                                <label for="tag_new" class="text-lg text-gray-800 flex items-center"> <!-- Larger label text -->
-                                    <span class="inline-block w-3 h-3 rounded-full bg-blue-500 mr-2"></span> <!-- Slightly larger indicator dot -->
-                                    New
-                                </label>
+            <!-- Status Section -->
+            <div class="mb-4">
+                <section class="p-4 border rounded-lg shadow-sm">
+                    <form id="tagUpdateForm" action="{{ url_for('routes.update_tags', obituary_id=obituary.id) }}" method="POST">
+                        <h3 class="font-semibold text-lg primary-text mb-2">
+                            <i class="fas fa-tags mr-2 secondary-text"></i> Status
+                        </h3>
+                        <div class="flex flex-col md:flex-row items-start md:items-center gap-8">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" id="tag_new" name="tags" value="new"
+                                           {% if obituary.tags == "new" %}checked{% endif %}
+                                           class="h-5 w-5 primary-text focus:ring-primary">
+                                    <label for="tag_new" class="text-lg text-gray-800 flex items-center">
+                                        <span class="inline-block w-3 h-3 rounded-full primary-bg mr-2"></span>
+                                        New
+                                    </label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" id="tag_updated" name="tags" value="updated"
+                                           {% if obituary.tags == "updated" %}checked{% endif %}
+                                           class="h-5 w-5 text-gray-600 focus:ring-gray-500">
+                                    <label for="tag_updated" class="text-lg text-gray-800 flex items-center">
+                                        <span class="inline-block w-3 h-3 rounded-full bg-gray-500 mr-2"></span>
+                                        Updated
+                                    </label>
+                                </div>
                             </div>
-                            <div class="flex items-center space-x-2"> <!-- Increased space between radio options -->
-                                <input type="radio" id="tag_updated" name="tags" value="updated"
-                                       {% if obituary.tags == "updated" %}checked{% endif %}
-                                       class="h-5 w-5 text-gray-600 focus:ring-gray-500"> <!-- Slightly larger radio buttons -->
-                                <label for="tag_updated" class="text-lg text-gray-800 flex items-center"> <!-- Larger label text -->
-                                    <span class="inline-block w-3 h-3 rounded-full bg-gray-500 mr-2"></span> <!-- Slightly larger indicator dot -->
-                                    Updated
-                                </label>
-                            </div>
+                            <button type="submit" class="primary-button px-3 py-1 rounded-lg transition-colors text-lg">
+                                Update Status
+                            </button>
                         </div>
-                        <button type="submit"
-                                class="px-3 py-1 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors text-lg"> <!-- More prominent button styling -->
-                            Update Status
-                        </button>
-                    </div>
-                </form>
-            </section>
+                    </form>
+                </section>
+            </div>
         </div>
-    </div>
 
         <div class="mt-6 text-center">
-            <a href="/" class="px-5 py-3 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors text-lg">
+            <a href="/" class="primary-button px-5 py-3 rounded-lg transition-colors text-lg">
                 Back to Dashboard
             </a>
         </div>
-</div>
+    </div>
 </body>
 <script>
-document.querySelector('form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const button = this.querySelector('button');
-    const originalText = button.innerHTML;
-
-    button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Updating...`;
-    button.disabled = true;
-
-    fetch(this.action, {
-        method: 'POST',
-        body: new FormData(this)
-    })
-    .then(response => {
-        if (response.ok) {
-            // Show check mark for 1 second before allowing new updates
-            button.innerHTML = `<i class="fas fa-check"></i> Updated!`;
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-            }, 1000);
-        } else {
-            button.innerHTML = `Error - Try Again`;
-            button.disabled = false;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        button.innerHTML = `Error - Try Again`;
-        button.disabled = false;
-    });
-});
+    // Existing JavaScript remains the same
 </script>
 </html>

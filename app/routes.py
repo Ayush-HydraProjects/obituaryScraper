@@ -125,39 +125,68 @@ def dashboard():
         }
         return render_template('dashboard.html', **response_data)
 
+
 @bp.route('/search_obituaries')
 def search_obituaries():
-    """Route to return search results as JSON for dashboard filtering.""" # Updated docstring
-    first_name_query = request.args.get('firstName', '').strip()
-    last_name_query = request.args.get('lastName', '').strip()
-    city_query = request.args.get('city', '').strip()
-    province_query = request.args.get('province', '').strip()
-    query_string = request.args.get('query', '').strip()
+    """Return unique obituaries matching search criteria, eliminating duplicates"""
+    # Get search parameters
+    first_name = request.args.get('firstName', '').strip()
+    last_name = request.args.get('lastName', '').strip()
+    city = request.args.get('city', '').strip()
+    province = request.args.get('province', '').strip()
+    query = request.args.get('query', '').strip()
 
     with current_app.app_context():
-        query_filter = DistinctObituary.query.filter(DistinctObituary.is_alumni == True)
+        # Subquery to find latest version of each obituary
+        grouped_obits = db.session.query(
+            DistinctObituary.first_name,
+            DistinctObituary.last_name,
+            DistinctObituary.birth_date,
+            DistinctObituary.death_date,
+            func.max(DistinctObituary.id).label('max_id')
+        ).filter(
+            DistinctObituary.is_alumni == True
+        ).group_by(
+            DistinctObituary.first_name,
+            DistinctObituary.last_name,
+            DistinctObituary.birth_date,
+            DistinctObituary.death_date
+        ).subquery('grouped_obits')
 
-        # Advanced Search Filters
-        if first_name_query:
-            query_filter = query_filter.filter(DistinctObituary.first_name.ilike(f"%{first_name_query}%"))
-        if last_name_query:
-            query_filter = query_filter.filter(DistinctObituary.last_name.ilike(f"%{last_name_query}%"))
-        if city_query:
-            query_filter = query_filter.filter(DistinctObituary.city.ilike(f"%{city_query}%"))
-        if province_query and province_query != '':
-            query_filter = query_filter.filter(DistinctObituary.province == province_query)
+        # Main query joining with grouped results
+        base_query = db.session.query(DistinctObituary).join(
+            grouped_obits,
+            (DistinctObituary.id == grouped_obits.c.max_id)
+        )
 
-
-        if query_string: # Simple search - if general query is present, it takes precedence
-             query_filter = DistinctObituary.query.filter(
-                (DistinctObituary.first_name.ilike(f"%{query_string}%")) |
-                (DistinctObituary.last_name.ilike(f"%{query_string}%")) |
-                 (DistinctObituary.family_information.ilike(f"%{query_string}%")) # Assuming content exists in DistinctObituary
+        # Apply filters cumulatively
+        if first_name:
+            base_query = base_query.filter(
+                DistinctObituary.first_name.ilike(f"%{first_name}%")
+            )
+        if last_name:
+            base_query = base_query.filter(
+                DistinctObituary.last_name.ilike(f"%{last_name}%")
+            )
+        if city:
+            base_query = base_query.filter(
+                DistinctObituary.city.ilike(f"%{city}%")
+            )
+        if province:
+            base_query = base_query.filter(
+                DistinctObituary.province == province
+            )
+        if query:
+            base_query = base_query.filter(
+                (DistinctObituary.first_name.ilike(f"%{query}%")) |
+                (DistinctObituary.last_name.ilike(f"%{query}%")) |
+                (DistinctObituary.family_information.ilike(f"%{query}%"))
             )
 
-        obituaries = query_filter.order_by(DistinctObituary.last_name).all()
+        # Execute and format results
+        results = base_query.order_by(DistinctObituary.last_name).all()
 
-        obituary_list = [{  # Prepare obituary data as dictionaries for JSON response
+        return jsonify([{
             'id': obit.id,
             'name': obit.name,
             'first_name': obit.first_name,
@@ -172,9 +201,7 @@ def search_obituaries():
             'tags': obit.tags,
             'latitude': obit.latitude,
             'longitude': obit.longitude,
-        } for obit in obituaries]
-
-        return jsonify(obituary_list)
+        } for obit in results])
 
 
 @bp.route('/get_obituaries')

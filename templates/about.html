@@ -3,106 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About | Remembering Lancers </title>
+    <title>About | Remembering UWindsor Lancers</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .primary-bg { background-color: #005596; }
+        .primary-text { color: #005596; }
+        .primary-border { border-color: #005596; }
+        .secondary-bg { background-color: #FFCE00; }
+        .secondary-text { color: #FFCE00; }
+        .secondary-border { border-color: #FFCE00; }
+    </style>
 </head>
-<body class="bg-gray-100">
-
-<!-- Announcement Bar -->
-<div class="bg-yellow-100 border-b border-yellow-200 text-sm px-4 py-2 text-center">
-    ⚠️ <strong class="font-semibold">Educational Purpose:</strong> This dashboard is for educational purposes. Obituary data is sourced from <a href="https://www.remembering.ca/" target="_blank" class="underline text-blue-500">remembering.ca</a>.
-</div>
-
-<!-- Header -->
-<header class="bg-white shadow-md py-4">
-    <div class="container mx-auto px-6 flex justify-between items-center">
-        <div class="text-xl font-bold text-gray-800">📖 Remembering Lancers</div>
-        <nav class="space-x-4">
-            <a href="/" class="hover:text-gray-600">🏠 Lancers Board</a>
-<!--            <a href="/settings" class="hover:text-gray-600">⚙️ Settings</a>-->
-            <a href="/about" class="hover:text-gray-600">ℹ️ About</a>
-        </nav>
+<body class="bg-gray-50">
+    <!-- Announcement Bar -->
+    <div class="primary-bg text-sm px-4 py-2 text-center text-white">
+        ⚠️ <strong class="font-semibold">Educational Purpose:</strong> This dashboard is for educational purposes. Obituary data is sourced from <a href="https://www.remembering.ca/" target="_blank" class="underline text-white">remembering.ca</a>.
     </div>
-</header>
 
-<!-- About Content -->
-<div class="container mx-auto px-6 py-12">
-    <div class="bg-white p-8 rounded-lg shadow-lg">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">🔹 Key Features</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Header -->
+    <header class="primary-bg shadow-md py-4">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="text-xl font-bold text-white">📖 Remembering UWindsor Lancers</div>
+            <nav class="space-x-4">
+                <a href="/" class="text-white hover:text-gray-200">🏠 Lancers Board</a>
+                <a href="/about" class="text-white hover:text-gray-200">ℹ️ About</a>
+            </nav>
+        </div>
+    </header>
 
-            <!-- Feature 1 -->
-            <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
-                <div class="text-blue-600 text-3xl">⚡</div>
-                <div>
-                    <h3 class="text-lg font-semibold">Automated Scraping</h3>
-                    <p class="text-gray-600 text-sm">Collects Lancer data from trusted sources.</p>
+    <!-- About Content -->
+    <div class="container mx-auto px-6 py-12">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold primary-text mb-6 text-center">🔹 Key Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <!-- Feature Cards -->
+                <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
+                    <div class="secondary-text text-3xl">⚡</div>
+                    <div>
+                        <h3 class="text-lg font-semibold primary-text">Automated Scraping</h3>
+                        <p class="text-gray-600 text-sm">Collects Lancer data from trusted sources.</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Feature 2 -->
-            <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
-                <div class="text-green-600 text-3xl">🎓</div>
-                <div>
-                    <h3 class="text-lg font-semibold">Alumni Filtering</h3>
-                    <p class="text-gray-600 text-sm">Identifies Lancers related to University of Windsor alumni.</p>
+                <!-- Repeat for other features with same border/color adjustments -->
+                <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
+                    <div class="secondary-text text-3xl">🎓</div>
+                    <div>
+                        <h3 class="text-lg font-semibold primary-text">Alumni Filtering</h3>
+                        <p class="text-gray-600 text-sm">Identifies University of Windsor alumni.</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Feature 3 -->
-            <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
-                <div class="text-yellow-600 text-3xl">📊</div>
-                <div>
-                    <h3 class="text-lg font-semibold">Dashboard Insights</h3>
-                    <p class="text-gray-600 text-sm">Provides real-time metrics for Lancers processed.</p>
+                <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
+                    <div class="secondary-text text-3xl">📊</div>
+                    <div>
+                        <h3 class="text-lg font-semibold primary-text">Dashboard Insights</h3>
+                        <p class="text-gray-600 text-sm">Real-time metrics for Lancers processed.</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Feature 4 -->
-            <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
-                <div class="text-purple-600 text-3xl">🔍</div>
-                <div>
-                    <h3 class="text-lg font-semibold">Search & Filter</h3>
-                    <p class="text-gray-600 text-sm">Easily search records by name, city, and province.</p>
+                <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
+                    <div class="secondary-text text-3xl">🔍</div>
+                    <div>
+                        <h3 class="text-lg font-semibold primary-text">Search & Filter</h3>
+                        <p class="text-gray-600 text-sm">Search by name, city, and province.</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Feature 5 -->
-            <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
-                <div class="text-red-600 text-3xl">📥</div>
-                <div>
-                    <h3 class="text-lg font-semibold">CSV Export</h3>
-                    <p class="text-gray-600 text-sm">Download all processed data in CSV format.</p>
+                <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
+                    <div class="secondary-text text-3xl">📥</div>
+                    <div>
+                        <h3 class="text-lg font-semibold primary-text">CSV Export</h3>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Feature 6 -->
-            <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
-                <div class="text-indigo-600 text-3xl">🔄</div>
-                <div>
-                    <h3 class="text-lg font-semibold">Real-time Updates</h3>
-                    <p class="text-gray-600 text-sm">Start/Stop scraping directly from the dashboard.</p>
+                <div class="p-6 bg-gray-50 rounded-lg shadow-md flex items-center space-x-4">
+                    <div class="secondary-text text-3xl">🔄</div>
+                    <div>
+                        <h3 class="text-lg font-semibold primary-text">Real-time Updates</h3>
+                        <p class="text-gray-600 text-sm">Control scraping directly from dashboard.</p>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- How It Works -->
+        <div class="bg-white p-8 rounded-lg shadow-lg mt-12\
+">
+            <h2 class="text-2xl font-semibold primary-text mb-4 text-center">💡 How It Works</h2>
+            <p class="text-gray-600 text-center max-w-2xl mx-auto">
+                The scraper runs in the background, extracting obituary details, filtering for alumni,
+                and displaying them in an easy-to-navigate interface. Users can start/stop the scraping process,
+                search records, and download structured data.
+            </p>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-6 rounded-lg shadow-md mt-12">
+            <h3 class="text-lg font-semibold">⚠ Disclaimer</h3>
+            <p class="text-sm">This tool is for <strong>educational purposes only</strong>. The data is sourced from
+            publicly available obituaries, and this project does not claim ownership or modification of any content.</p>
+        </div>
     </div>
-
-    <!-- How It Works -->
-    <div class="bg-white p-8 rounded-lg shadow-lg mt-12">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">💡 How It Works</h2>
-        <p class="text-gray-600 text-center max-w-2xl mx-auto">
-            The scraper runs in the background, extracting obituary details, filtering for alumni, and displaying them in an easy-to-navigate interface. Users can start/stop the scraping process, search records, and download structured data.
-        </p>
-    </div>
-
-    <!-- Disclaimer -->
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-6 rounded-lg shadow-md mt-12">
-        <h3 class="text-lg font-semibold">⚠ Disclaimer</h3>
-        <p class="text-sm">This tool is for <strong>educational purposes only</strong>. The data is sourced from publicly available obituaries, and this project does not claim ownership or modification of any content.</p>
-    </div>
-
-</div>
-
 </body>
 </html>
