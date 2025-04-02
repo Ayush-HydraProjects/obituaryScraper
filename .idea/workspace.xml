@@ -6,9 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8b1d3ac4-26a5-4a40-b852-211847559101" name="Changes" comment="lancer update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/script.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -217,7 +214,7 @@
       <workItem from="1743175381827" duration="521000" />
       <workItem from="1743175920390" duration="12045000" />
       <workItem from="1743393053403" duration="5487000" />
-      <workItem from="1743439464083" duration="30101000" />
+      <workItem from="1743439464083" duration="35854000" />
     </task>
     <task id="LOCAL-00001" summary="lancer update">
       <option name="closed" value="true" />
