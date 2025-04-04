@@ -332,7 +332,9 @@
     <header class="primary-bg shadow-md py-4">
       <div class="container mx-auto px-6 flex justify-between items-center">
         <div class="text-xl font-bold text-white">
+            <a href="/" class="text-white hover:text-gray-200">
           📖 Remembering UWindsor Lancers
+            </a>
         </div>
         <nav class="space-x-4">
           <a href="/" class="text-white hover:text-gray-200">🏠 Lancers Board</a>
@@ -345,7 +347,7 @@
       <!-- Sidebar - Advanced Filters -->
     <aside class="w-72 mr-6 p-6 bg-white rounded-lg shadow-md h-fit sticky top-6">
       <h3 class="font-semibold text-xl mb-5 primary-text">
-        <i class="fas fa-filter mr-2 secondary-text"></i> Filter Lancers
+        <i class="fas fa-filter mr-2"></i> Filter Lancers
       </h3>
         <form id="filterForm" class="space-y-6">
           <!-- Increased vertical spacing -->
@@ -444,9 +446,9 @@
           </div>
         </form>
         <!-- Start of Replacement Download Data Section -->
-        <div class="mt-8 p-6 rounded-lg shadow-md border">
-          <h2 class="text-lg font-semibold mb-4 text-gray-800">
-            <i class="fas fa-download mr-2 text-blue-500"></i> Download Data
+        <div class="mt-8 rounded-lg">
+          <h2 class="text-lg font-semibold mb-4 primary-text">
+            <i class="fas fa-download mr-2 primary-text"></i> Download Data
           </h2>
           <p class="text-sm text-gray-600 mb-4">
             Download Lancers alumni obituaries data as a CSV file. Apply filters
@@ -466,8 +468,8 @@
               <i class="fas fa-file-csv mr-1"></i> Download All Data
             </a>
           </div>
-          <h2 class="text-lg font-semibold mb-4 mt-4 text-gray-800">
-            <i class="fas fa-envelope mr-2 text-blue-500"></i> Email Reports
+          <h2 class="text-lg font-semibold mb-4 mt-4 primary-text">
+            <i class="fas fa-envelope mr-2 primary-text"></i> Email Reports
           </h2>
           <div class="flex flex-col space-y-3">
             <button
@@ -768,7 +770,7 @@
               ▶ Start
             </button>
             <button
-              class="secondary-button text-white px-4 py-2 rounded-lg secondary-button:hover"
+              class="secondary-button border-0 text-white px-4 py-2 rounded-lg secondary-button:hover"
               onclick="stopScraping()"
               disabled
               id="stopButton"
@@ -803,6 +805,9 @@
 
           <div id="obituaryAccordionContainer">
             <!-- Accordion will be generated here by JavaScript -->
+          </div>
+          <div class="p-4 flex justify-center hidden" id="loadMoreContainer">
+              <button id="loadMoreButton" class="secondary-button">Load More Obituaries</button>
           </div>
         </div>
       </main>

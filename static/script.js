@@ -2,14 +2,12 @@
 
 const entriesFetchedSpan = document.getElementById("entriesFetched");
 
-
 function updateEntriesFetchedDisplay(value) {
     entriesFetchedSpan.textContent = value;
 }
 
-
 function startScraping() {
-    if (scrapingActive) { // Now checking direct scrapingActive value
+    if (scrapingActive) {
         alert("Scraping is already running.");
         return;
     }
@@ -28,9 +26,9 @@ function startScraping() {
         })
         .then(data => {
             alert(data.message);
-            scrapingActive = data.scraping_active;  // Use server's response
+            scrapingActive = data.scraping_active;
             updateScraperUI();
-            if (data.last_scrape_time) { // Update last scrape time after start
+            if (data.last_scrape_time) {
                 updateLastScrapeTimeDisplay(data.last_scrape_time);
             }
         })
@@ -41,7 +39,7 @@ function startScraping() {
 }
 
 function stopScraping() {
-    if (!scrapingActive) { // Now checking direct scrapingActive value
+    if (!scrapingActive) {
         alert("Scraping is not currently running.");
         return;
     }
@@ -60,9 +58,9 @@ function stopScraping() {
         })
         .then(data => {
             alert(data.message);
-            scrapingActive = data.scraping_active;  // Use server's response
+            scrapingActive = data.scraping_active;
             updateScraperUI();
-            if (data.last_scrape_time) { // Update last scrape time after stop
+            if (data.last_scrape_time) {
                 updateLastScrapeTimeDisplay(data.last_scrape_time);
             }
         })
@@ -76,9 +74,9 @@ function updateScrapingStatusDisplay() {
     fetch('/scrape_status')
         .then(response => response.json())
         .then(data => {
-            scrapingActive = data.scraping_active; // Update scrapingActive from server status
-            updateScraperUI(); // Call updateUI function
-            if (data.last_scrape_time) { // Update last scrape time on status update
+            scrapingActive = data.scraping_active;
+            updateScraperUI();
+            if (data.last_scrape_time) {
                 updateLastScrapeTimeDisplay(data.last_scrape_time);
             }
         })
@@ -87,7 +85,7 @@ function updateScrapingStatusDisplay() {
         });
 }
 
-function updateScraperUI() { // NEW FUNCTION to update UI elements based on scrapingActive
+function updateScraperUI() {
     if (scrapingActive) {
         document.getElementById("startButton").disabled = true;
         document.getElementById("stopButton").disabled = false;
@@ -99,7 +97,6 @@ function updateScraperUI() { // NEW FUNCTION to update UI elements based on scra
     }
 }
 
-
 function clearFilters() {
     document.getElementById("firstNameFilter").value = '';
     document.getElementById("lastNameFilter").value = '';
@@ -108,11 +105,9 @@ function clearFilters() {
     refreshObituaries();
 }
 
-
 document.addEventListener('DOMContentLoaded', function () {
     refreshObituaries();
-    // updateDashboardSummary(); // If you still use this
-    updateScrapingStatusDisplay(); // Initial status update on load
+    updateScrapingStatusDisplay();
     setInterval(updateScrapingStatusDisplay, 20000);
     setInterval(refreshObituaries, 100000);
 
@@ -122,8 +117,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const tagForm = document.getElementById('tagUpdateForm');
-    if (tagForm){
-        tagForm.addEventListener('submit', function(e) {
+    if (tagForm) {
+        tagForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
             const formData = new FormData(this);
@@ -143,66 +138,94 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(error => console.error('Error:', error));
         });
     }
+
+    const loadMoreButton = document.getElementById('loadMoreButton');
+    if (loadMoreButton) {
+        loadMoreButton.addEventListener('click', loadMoreObituaries);
+    }
 });
 
+let currentObituaryData = [];
+let obituariesPerPage = 10;
+let obituariesLoadedCount = 0;
+let currentFilters = {};
+let currentYearForPagination = null; // Track the year for which pagination is active
 
 function applyFilters() {
-    // Retrieve filter input values
     const firstName = document.getElementById("firstNameFilter").value.trim();
     const lastName = document.getElementById("lastNameFilter").value.trim();
     const city = document.getElementById("cityFilter").value.trim();
     const province = document.getElementById("provinceFilter").value.trim();
 
-    // Show loading spinner
-    document.getElementById("loading-spinner").classList.remove("hidden");
-    document.getElementById("obituaryAccordionContainer").innerHTML = ""; // Clear accordion container instead of obituaryList
-    document.getElementById("noNewEntries").classList.add("hidden");
+    currentFilters = { firstName, lastName, city, province };
 
-    // Build query parameters dynamically
+    document.getElementById("loading-spinner").classList.remove("hidden");
+    document.getElementById("obituaryAccordionContainer").innerHTML = "";
+    document.getElementById("noNewEntries").classList.add("hidden");
+    document.getElementById('loadMoreContainer').classList.add('hidden');
+    obituariesLoadedCount = 0;
+    currentYearForPagination = null; // Reset pagination year
+
+
     const params = new URLSearchParams();
     if (firstName) params.append("firstName", firstName);
     if (lastName) params.append("lastName", lastName);
     if (city) params.append("city", city);
     if (province) params.append("province", province);
 
-
     fetch(`/search_obituaries?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
-            // Hide loading spinner
+            currentObituaryData = data;
             document.getElementById("loading-spinner").classList.add("hidden");
 
             if (data.length === 0) {
-                document.getElementById("noNewEntries").classList.remove("hidden"); // Show no entries message
+                document.getElementById("noNewEntries").classList.remove("hidden");
             } else {
-                document.getElementById("noNewEntries").classList.add("hidden"); // Hide no entries message
-                renderYearAccordion(data); // Render accordion with filtered data, now YEAR accordion
+                document.getElementById("noNewEntries").classList.add("hidden");
+                renderYearAccordion(getObituariesForYear("2025", 1), "2025"); // Only load 2025 initially with pagination
+                renderYearAccordion(getObituariesForYear("2024", 'all'), "2024"); // Load all for 2024
+                renderYearAccordion(getObituariesForYear("2023", 'all'), "2023"); // Load all for 2023
+                renderYearAccordion(getObituariesForYear("2022", 'all'), "2022"); // Load all for 2022
+                renderYearAccordion(getObituariesForYear("Before 2022", 'all'), "Before 2022"); // Load all before 2022
+                console.log("applyFilters: After renderYearAccordion calls, calling updateLoadMoreButtonVisibility()"); // <--- ADD THIS LOG
+                updateLoadMoreButtonVisibility(); // Call visibility update
             }
         })
         .catch(error => {
             console.error("Search error:", error);
             alert("Error fetching search results.");
-            // Hide loading spinner on error
             document.getElementById("loading-spinner").classList.add("hidden");
         });
 }
 
 
-function refreshObituaries() { // Modified refreshObituaries to use year accordion
+function refreshObituaries() {
     document.getElementById('loading-spinner').classList.remove('hidden');
-    document.getElementById('obituaryAccordionContainer').innerHTML = ""; // Clear previous accordion
+    document.getElementById('obituaryAccordionContainer').innerHTML = "";
     document.getElementById('noNewEntries').classList.add('hidden');
+    document.getElementById('loadMoreContainer').classList.add('hidden');
+    obituariesLoadedCount = 0;
+    currentYearForPagination = null; // Reset pagination year
+    currentFilters = {};
 
     fetch('/get_obituaries')
         .then(response => response.json())
         .then(data => {
+            currentObituaryData = data;
             document.getElementById('loading-spinner').classList.add('hidden');
 
             if (data.length === 0) {
                 document.getElementById('noNewEntries').classList.remove('hidden');
             } else {
                 document.getElementById('noNewEntries').classList.add('hidden');
-                renderYearAccordion(data); // Call function to render YEAR accordion
+                renderYearAccordion(getObituariesForYear("2025", 1), "2025"); // Only load 2025 initially with pagination
+                renderYearAccordion(getObituariesForYear("2024", 'all'), "2024"); // Load all for 2024
+                renderYearAccordion(getObituariesForYear("2023", 'all'), "2023"); // Load all for 2023
+                renderYearAccordion(getObituariesForYear("2022", 'all'), "2022"); // Load all for 2022
+                renderYearAccordion(getObituariesForYear("Before 2022", 'all'), "Before 2022"); // Load all before 2022
+                console.log("refreshObituaries: After renderYearAccordion calls, calling updateLoadMoreButtonVisibility()"); // <--- ADD THIS LOG
+                updateLoadMoreButtonVisibility(); // Call visibility update
             }
         })
         .catch(error => {
@@ -211,29 +234,110 @@ function refreshObituaries() { // Modified refreshObituaries to use year accordi
         });
 }
 
-function renderYearAccordion(obituaries) { // Renamed function to render YEAR accordion
-    const accordionContainer = document.getElementById('obituaryAccordionContainer');
-    const yearGroups = groupObituariesByYear(obituaries); // Group data by year (new function below)
-    const yearOrder = ["2025", "2024", "2023", "2022", "Before 2022"]; // Define year order
-    let firstAccordionSection = true; // Flag to track the first accordion
 
-    yearOrder.forEach(year => { // Use yearOrder to control the order of accordion sections
-        if (yearGroups.hasOwnProperty(year)) {
-            const yearObituaries = yearGroups[year];
-            if (yearObituaries.length > 0) { // Only create accordion if there are obituaries for the year
-                const yearAccordion = createYearAccordionSection(year, yearObituaries, firstAccordionSection); // Create year accordion section (new function below), pass firstAccordionSection
-                accordionContainer.appendChild(yearAccordion);
-                if (firstAccordionSection) {
-                    firstAccordionSection = false; // Set flag to false after creating the first section
-                }
-            }
+function getObituariesForYear(year, pageOrAll) {
+    const yearObituaries = groupObituariesByYear(currentObituaryData)[year] || [];
+    console.log(`getObituariesForYear: year=${year}, pageOrAll=${pageOrAll}, yearObituaries.length=${yearObituaries.length}`);
+
+
+    if (pageOrAll === 'all') {
+        console.log(`  Returning ALL obituaries for ${year}`);
+        return yearObituaries; // Return all obituaries for the year
+    } else { // Handle page number for 2025
+        const pageNumber = parseInt(pageOrAll);
+        const startIndex = (pageNumber - 1) * obituariesPerPage;
+        const endIndex = startIndex + obituariesPerPage;
+        const pagedObituaries = yearObituaries.slice(startIndex, endIndex);
+        if (year === "2025") { // Only update loaded count for 2025
+            obituariesLoadedCount += pagedObituaries.length;
+            currentYearForPagination = "2025"; // Set pagination year to 2025
+            console.log(`  Returning page ${pageNumber} for 2025, loadedCount=${obituariesLoadedCount}`);
+        } else {
+            console.log(`  Returning page ${pageNumber} for ${year} (no pagination tracking)`);
         }
-    });
+        return pagedObituaries;
+    }
 }
 
 
-function groupObituariesByYear(obituaries) { // NEW function to group by YEAR
-    const yearGroups = { // Initialize with all year groups to maintain order and include empty groups
+function loadMoreObituaries() {
+    if (currentYearForPagination === "2025") { // Only load more if pagination is for 2025
+        const nextPage = Math.ceil(obituariesLoadedCount / obituariesPerPage) + 1;
+        const nextPageObituaries = getObituariesForYear("2025", nextPage);
+
+        if (nextPageObituaries.length > 0) {
+            renderYearAccordion(nextPageObituaries, "2025", false); // Append to 2025 accordion
+        }
+    }
+    updateLoadMoreButtonVisibility();
+}
+
+
+function updateLoadMoreButtonVisibility() {
+    const loadMoreContainer = document.getElementById('loadMoreContainer');
+    console.log("ENTERING updateLoadMoreButtonVisibility()"); // <--- ADD THIS LOG AT THE START
+    console.log(`updateLoadMoreButtonVisibility: currentYearForPagination=${currentYearForPagination}`);
+    if (currentYearForPagination === "2025") { // Only consider Load More for 2025
+        const total2025Obituaries = (groupObituariesByYear(currentObituaryData)["2025"] || []).length;
+        console.log(`  2025: obituariesLoadedCount=${obituariesLoadedCount}, total2025Obituaries=${total2025Obituaries}`);
+        if (obituariesLoadedCount < total2025Obituaries) {
+            loadMoreContainer.classList.remove('hidden');
+        } else {
+            loadMoreContainer.classList.add('hidden');
+        }
+    } else { // Hide Load More for other years
+        loadMoreContainer.classList.add('hidden');
+    }
+}
+
+
+function renderYearAccordion(obituaries, year, isInitialLoad = true) { // Modified to accept year
+    if (!obituaries || obituaries.length === 0) return; // Exit if no obituaries for this year
+
+    const accordionContainer = document.getElementById('obituaryAccordionContainer');
+
+
+    let yearAccordion = null;
+    const accordionButtons = accordionContainer.querySelectorAll('.accordion-section .accordion-button');
+    accordionButtons.forEach(button => {
+        if (button.textContent.trim() === year) {
+            yearAccordion = button.closest('.accordion-section');
+        }
+    });
+
+    if (!yearAccordion) {
+        yearAccordion = createYearAccordionSection(year, obituaries, isInitialLoad && year === "2025");
+        accordionContainer.appendChild(yearAccordion);
+    } else {
+        if (year === "2025") { // Append only for 2025, replace for others if needed behaviour change
+            const tableBody = yearAccordion.querySelector('tbody');
+            if (tableBody) {
+                obituaries.forEach(obituary => {
+                    const row = createObituaryTableRow(obituary);
+                    tableBody.appendChild(row);
+                });
+            }
+        } else { // For other years (2024, 2023 etc.), replace content - adjust as needed
+            const tableBody = yearAccordion.querySelector('tbody');
+            if (tableBody) {
+                tableBody.innerHTML = ''; // Clear existing content
+                obituaries.forEach(obituary => {
+                    const row = createObituaryTableRow(obituary);
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+    }
+
+    if (isInitialLoad && year === "2025") {
+        const headingButton = yearAccordion.querySelector('.accordion-button');
+        if (headingButton) headingButton.classList.add('active');
+    }
+}
+
+
+function groupObituariesByYear(obituaries) {
+    const yearGroups = {
         "2025": [],
         "2024": [],
         "2023": [],
@@ -242,11 +346,11 @@ function groupObituariesByYear(obituaries) { // NEW function to group by YEAR
     };
 
     obituaries.forEach(obituary => {
-        let publicationYear = 'Unknown Year'; // Default year if extraction fails
+        let publicationYear = 'Unknown Year';
         if (obituary.publication_date) {
             const year = new Date(obituary.publication_date).getFullYear();
-            if (!isNaN(year)) { // Check if year is a valid number
-                publicationYear = String(year); // Convert year to string for grouping
+            if (!isNaN(year)) {
+                publicationYear = String(year);
             } else {
                 publicationYear = 'Unknown Year';
             }
@@ -256,37 +360,34 @@ function groupObituariesByYear(obituaries) { // NEW function to group by YEAR
         else if (publicationYear === '2024') yearGroups["2024"].push(obituary);
         else if (publicationYear === '2023') yearGroups["2023"].push(obituary);
         else if (publicationYear === '2022') yearGroups["2022"].push(obituary);
-        else if (publicationYear !== 'Unknown Year' && parseInt(publicationYear) < 2022) yearGroups["Before 2022"].push(obituary); // Group years before 2022
-        // else yearGroups["Unknown Year"].push(obituary); // Optional: Handle 'Unknown Year' if needed, or just ignore
+        else if (publicationYear !== 'Unknown Year' && parseInt(publicationYear) < 2022) yearGroups["Before 2022"].push(obituary);
     });
     return yearGroups;
 }
 
 
-function createYearAccordionSection(year, obituaries, isFirstSection) { // NEW function to create YEAR accordion section, added isFirstSection parameter
+function createYearAccordionSection(year, obituaries, isFirstSection) {
     const yearSection = document.createElement('div');
-    yearSection.classList.add('accordion-section'); // You can keep 'accordion-section' class for styling
+    yearSection.classList.add('accordion-section');
 
     const yearHeading = document.createElement('button');
-    yearHeading.classList.add('accordion-button'); // Keep 'accordion-button' class for styling
-    yearHeading.textContent = year; // Set the year as the button text
-    yearHeading.addEventListener('click', () => { // Accordion toggle functionality (same as before)
+    yearHeading.classList.add('accordion-button');
+    yearHeading.textContent = year;
+    yearHeading.addEventListener('click', () => {
         yearContent.classList.toggle('hidden');
-        yearHeading.classList.toggle('active'); // Toggle active class on header
+        yearHeading.classList.toggle('active');
     });
     yearSection.appendChild(yearHeading);
 
     const yearContent = document.createElement('div');
-    yearContent.classList.add('accordion-content'); // Keep 'accordion-content' class
-    if (!isFirstSection) { // Add 'hidden' class only if it's NOT the first section
+    yearContent.classList.add('accordion-content');
+    if (!isFirstSection) {
         yearContent.classList.add('hidden');
     }
 
-    // Create the table
     const obituaryTable = document.createElement('table');
-    obituaryTable.classList.add('obituary-table'); // Keep 'obituary-table' class for table styling
+    obituaryTable.classList.add('obituary-table');
 
-    // Create table header (<thead>)
     const tableHeader = document.createElement('thead');
     tableHeader.innerHTML = `
         <tr>
@@ -300,51 +401,19 @@ function createYearAccordionSection(year, obituaries, isFirstSection) { // NEW f
     `;
     obituaryTable.appendChild(tableHeader);
 
-     // Create a paragraph for "No obituaries in this year" if obituaries array is empty
+
     if (!obituaries || obituaries.length === 0) {
         const noObituariesPara = document.createElement('p');
         noObituariesPara.textContent = "No obituaries in this year.";
         yearContent.appendChild(noObituariesPara);
         yearSection.appendChild(yearContent);
-        return yearSection; // Return early if no obituaries
+        return yearSection;
     }
 
 
-    // Create table body (<tbody>)
     const tableBody = document.createElement('tbody');
     obituaries.forEach(obituary => {
-        const row = document.createElement('tr');
-        row.classList.add("hover:bg-gray-100", "transition");
-
-        // Construct Name cell content to include pill BEFORE the name
-        let nameCellContent = `<td class="border px-4 py-2">`; // Start of td
-
-        if (obituary.tags === 'new') {
-            nameCellContent += `
-                    <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none rounded-full primary-bg text-white">
-                        New
-                    </span>`; // New Pill
-        } else if (obituary.tags === 'updated') {
-            nameCellContent += `
-                    <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none rounded-full secondary-bg text-black">
-                        Updated
-                    </span>`; // Updated Pill (Gray color)
-        }
-        nameCellContent += `
-                <a href="/obituary/${obituary.id}" class="font-medium text-gray-700 hover:text-blue-600 inline-flex items-center">
-                    ${obituary.first_name || 'N/A'} ${obituary.last_name || 'N/A'}
-                </a></td>`; // Name Link
-
-        row.innerHTML =`
-            ${nameCellContent}
-            <td class="border px-4 py-2">${obituary.city || 'N/A'}</td>
-            <td class="border px-4 py-2">${obituary.province || 'N/A'}</td>
-            <td class="border px-4 py-2">${obituary.birth_date || 'N/A'}</td>
-            <td class="border px-4 py-2">${obituary.death_date || 'N/A'}</td>
-            <td class="border px-4 py-2">
-                <a href="/obituary/${obituary.id}" class="text-blue-500 hover:underline">🔗 View</a>
-            </td>
-        `;
+        const row = createObituaryTableRow(obituary);
         tableBody.appendChild(row);
     });
     obituaryTable.appendChild(tableBody);
@@ -358,7 +427,44 @@ function createYearAccordionSection(year, obituaries, isFirstSection) { // NEW f
     return yearSection;
 }
 
-function updateLastScrapeTimeDisplay(timeString) { // NEW function to update last scrape time
+
+function createObituaryTableRow(obituary) {
+    const row = document.createElement('tr');
+    row.classList.add("hover:bg-gray-100", "transition");
+
+    let nameCellContent = `<td class="border px-4 py-2">`;
+
+    if (obituary.tags === 'new') {
+        nameCellContent += `
+                <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none rounded-full primary-bg text-white">
+                    New
+                </span>`;
+    } else if (obituary.tags === 'updated') {
+        nameCellContent += `
+                <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none rounded-full secondary-bg text-black">
+                    Updated
+                </span>`;
+    }
+    nameCellContent += `
+            <a href="/obituary/${obituary.id}" class="font-medium text-gray-700 hover:text-blue-600 inline-flex items-center">
+                ${obituary.first_name || 'N/A'} ${obituary.last_name || 'N/A'}
+            </a></td>`;
+
+    row.innerHTML = `
+        ${nameCellContent}
+        <td class="border px-4 py-2">${obituary.city || 'N/A'}</td>
+        <td class="border px-4 py-2">${obituary.province || 'N/A'}</td>
+        <td class="border px-4 py-2">${obituary.birth_date || 'N/A'}</td>
+        <td class="border px-4 py-2">${obituary.death_date || 'N/A'}</td>
+        <td class="border px-4 py-2">
+            <a href="/obituary/${obituary.id}" class="text-blue-500 hover:underline">🔗 View</a>
+        </td>
+    `;
+    return row;
+}
+
+
+function updateLastScrapeTimeDisplay(timeString) {
     const lastScrapeTimeSpan = document.getElementById("lastScrapeTimeDisplay");
     if (timeString) {
         lastScrapeTimeSpan.textContent = new Date(timeString).toLocaleString();
